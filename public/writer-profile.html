@@ -1,0 +1,3108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="ACES Blog - The Broadsheet Technical Gazette, Writer Profile & Editorial Workbench." />
+  <title>Aarav Sharma · Editorial Profile & Broadsheet Gazette | Blog Aces</title>
+
+  <!-- High-End Broadsheet Typography: Anton + Merriweather + Courier Prime + Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================================
+       1. BROADSHEET OLD-MONEY DESIGN SYSTEM (STARK PAPER & PRINTER'S INK)
+       ===================================================================== */
+    :root {
+      /* Typography */
+      --font-heading: 'Anton', Impact, 'Playfair Display', 'Arial Black', sans-serif;
+      --font-body: 'Merriweather', 'PT Serif', 'Times New Roman', Georgia, serif;
+      --font-mono: 'Courier Prime', 'Courier New', Courier, monospace;
+
+      /* Stark Paper & Ink Palette - Pure White & Solid Black Only */
+      --bg-canvas: #ffffff;
+      --bg-card: #ffffff;
+      --bg-muted: #ffffff;
+      --bg-subtle: #ffffff;
+      --bg-hover: #000000;
+
+      --border-black: #000000;
+      --border-subtle: #000000;
+      --border-medium: #000000;
+      --border-focus: #000000;
+
+      --text-main: #000000;
+      --text-body: #000000;
+      --text-muted: #000000;
+      --text-subtle: #000000;
+
+      --brand-primary: #000000;
+      --brand-accent: #000000;
+
+      /* Hard Stark Edges - Zero Radius */
+      --radius-sm: 0px;
+      --radius-md: 0px;
+      --radius-lg: 0px;
+      --radius-xl: 0px;
+      --radius-pill: 0px;
+
+      --shadow-sm: none;
+      --shadow-card: none;
+      --shadow-hover: none;
+      --shadow-modal: 10px 10px 0px #000000;
+    }
+
+    /* Inverted Letterpress / Dark Proof Mode */
+    [data-theme="dark"] {
+      --bg-canvas: #000000;
+      --bg-card: #000000;
+      --bg-muted: #000000;
+      --bg-subtle: #000000;
+      --bg-hover: #ffffff;
+
+      --border-black: #ffffff;
+      --border-subtle: #ffffff;
+      --border-medium: #ffffff;
+      --border-focus: #ffffff;
+
+      --text-main: #ffffff;
+      --text-body: #ffffff;
+      --text-muted: #ffffff;
+      --text-subtle: #ffffff;
+
+      --brand-primary: #ffffff;
+      --brand-accent: #ffffff;
+
+      --shadow-modal: 10px 10px 0px #ffffff;
+    }
+
+    /* =====================================================================
+       2. RESET & BASE
+       ===================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    html, body {
+      background-color: var(--bg-canvas);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.34;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      color: var(--text-main);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      border-radius: 0;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--border-black);
+      outline-offset: 2px;
+    }
+
+    ::selection {
+      background: var(--text-main);
+      color: var(--bg-canvas);
+    }
+
+    /* Broadsheet Double Rules */
+    .double-rule-thick {
+      border: none;
+      border-top: 3px solid var(--border-black);
+      border-bottom: 1px solid var(--border-black);
+      height: 6px;
+      margin: 0.5rem 0;
+    }
+
+    .double-rule-thin {
+      border: none;
+      border-top: 1px solid var(--border-black);
+      border-bottom: 1px solid var(--border-black);
+      height: 4px;
+      margin: 0.4rem 0;
+    }
+
+    /* =====================================================================
+       3. TOPBAR & FOLIO BANNER
+       ===================================================================== */
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 4px solid var(--border-black);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-logo-shield {
+      width: 40px;
+      height: 40px;
+      background: var(--text-main);
+      color: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: 1.5rem;
+      border: 2px solid var(--border-black);
+      user-select: none;
+    }
+
+    .brand-text-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border: 1.5px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .nav-search-wrap {
+      flex: 1;
+      max-width: 360px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-search-icon {
+      position: absolute;
+      left: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text-main);
+      pointer-events: none;
+    }
+
+    .nav-search-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 2.2rem 0 2.25rem;
+      border: 2px solid var(--border-black);
+      background: var(--bg-card);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+
+    .nav-search-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .nav-search-kbd {
+      position: absolute;
+      right: 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-black);
+      padding: 0.05rem 0.35rem;
+      color: var(--text-main);
+      pointer-events: none;
+    }
+
+    .topbar-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .mock-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 0.35rem 0.65rem;
+      border: 2px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-icon-switch {
+      height: 36px;
+      padding: 0 0.75rem;
+      border: 2px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+    }
+
+    .btn-icon-switch:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .btn-primary-write {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      height: 36px;
+      padding: 0 1rem;
+      background: var(--text-main);
+      color: var(--bg-card);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 2px solid var(--border-black);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary-write:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    /* =====================================================================
+       4. PAGE WRAPPER & MASTHEAD HEADER
+       ===================================================================== */
+    .page-wrapper {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      width: 100%;
+    }
+
+    /* =====================================================================
+       5. AUTHOR PROFILE SECTION (ACADEMIC PRESS CREDENTIAL / FELLOW PASS)
+       ===================================================================== */
+    .snappy-profile-card {
+      background: var(--bg-card);
+      border: 4px solid var(--border-black);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Asymmetrical 2-Column Grid: 300px Left Column, 1fr Right Column */
+    .snappy-profile-body {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      align-items: stretch;
+      background: var(--bg-card);
+    }
+
+    /* Left Column: Halftone Avatar + Seal + Cut-Out Mail Coupons */
+    .author-column-left {
+      border-right: 3px solid var(--border-black);
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+      background: var(--bg-card);
+      position: relative;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 170px;
+      height: 170px;
+    }
+
+    .avatar-box {
+      width: 170px;
+      height: 170px;
+      border: 3px solid var(--border-black);
+      background: var(--bg-card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    /* 100% Grayscale + Authentic Fine 133-LPI Newsprint Halftone Screen */
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+
+    .avatar-box:hover img {
+      transform: scale(1.04);
+    }
+
+    /* Registration crosshair mark */
+    .avatar-reg-mark {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 900;
+      pointer-events: none;
+    }
+
+    .author-seal-box {
+      border: 2px solid var(--border-black);
+      padding: 0.35rem 0.65rem;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    /* Cut-Out Mail Coupons with Notches and Stamp Animation */
+    .mail-coupon-block {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-top: 2px dashed var(--border-black);
+      padding-top: 1.25rem;
+      position: relative;
+    }
+
+    .coupon-cut-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .coupon-action-btn {
+      width: 100%;
+      border: 2px dashed var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.7rem 0.75rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      position: relative;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+
+    .coupon-action-btn:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .coupon-action-btn.active {
+      background: var(--text-main);
+      color: var(--bg-card);
+      border-style: solid;
+      box-shadow: inset 0 0 0 2px var(--bg-card);
+    }
+
+    /* Right Column: Press Pass Credentials & Story Abstract */
+    .author-column-right {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+    }
+
+    .author-title-compartment {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 2px solid var(--border-black);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .creator-name {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1;
+      color: var(--text-main);
+    }
+
+    .name-sub-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .verified-mark {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      background: var(--text-main);
+      color: var(--bg-card);
+      border: 1.5px solid var(--border-black);
+    }
+
+    .creator-handle {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+    }
+
+    .author-bio-compartment {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 2px solid var(--border-black);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .bio-kicker-header {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* Author Bio: Tight serif with authentic bold italics and drop cap */
+    .creator-bio-box {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      line-height: 1.34;
+      letter-spacing: -0.01em;
+      color: var(--text-body);
+    }
+
+    .creator-bio-box em {
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .creator-bio-box .clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .bio-toggle-anchor {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-main);
+      text-decoration: underline;
+      align-self: flex-start;
+      margin-top: 0.35rem;
+    }
+
+    /* Academic Fellow Signature Line */
+    .fellow-signature-row {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border-black);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .signature-ink-line {
+      font-style: italic;
+      text-decoration: underline;
+      letter-spacing: 0.05em;
+    }
+
+    /* Badges & Manicules */
+    .author-footer-compartment {
+      padding: 1.15rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-card);
+    }
+
+    .badge-pills-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag-badge {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border: 1.5px solid var(--border-black);
+      padding: 0.2rem 0.6rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .tag-badge.award {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .social-anchors-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .social-link-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 2px solid var(--border-black);
+      padding: 0.35rem 0.75rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+    }
+
+    .social-link-pill:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    /* =====================================================================
+       7. WSJ / FINANCIAL TIMES TELEMETRY & MARKET CHART
+       ===================================================================== */
+    .insights-deck {
+      border: 4px solid var(--border-black);
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+
+    .insights-header-row {
+      background: var(--border-black);
+      color: var(--bg-card);
+      padding: 0.6rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-black);
+    }
+
+    .insights-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Asymmetrical 3-Column Metrics Row */
+    .metric-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: stretch;
+      background: var(--bg-card);
+    }
+
+    .metric-card {
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+    }
+
+    .metric-card.col-border {
+      border-right: 3px solid var(--border-black);
+    }
+
+    .metric-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-symbol {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .metric-tag-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border: 1.5px solid var(--border-black);
+      padding: 0.15rem 0.5rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .metric-data-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-number {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.35rem;
+      color: var(--text-main);
+    }
+
+    /* =====================================================================
+       8. WORKBENCH & EDITORIAL PIPELINE
+       ===================================================================== */
+    .workbench-card {
+      border: 4px solid var(--border-black);
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+
+    .workbench-header {
+      border-bottom: 3px solid var(--border-black);
+      background: var(--bg-card);
+    }
+
+    .workbench-top-row {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      border-bottom: 2px solid var(--border-black);
+    }
+
+    .workbench-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .workbench-title-group h2 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .workbench-count-tag {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1.5px solid var(--border-black);
+      padding: 0.15rem 0.5rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .workbench-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .search-filter-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-filter-icon {
+      position: absolute;
+      left: 0.65rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .search-filter-input {
+      height: 36px;
+      border: 2px solid var(--border-black);
+      padding: 0 0.85rem 0 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .search-filter-input::placeholder {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .sort-dropdown {
+      height: 36px;
+      border: 2px solid var(--border-black);
+      padding: 0 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: var(--bg-card);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .btn-action-snappy.btn-primary-action {
+      border: 2px dashed var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action-snappy.btn-primary-action:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    /* Connected Segmented Status Tabs */
+    .segmented-tabs-deck {
+      display: flex;
+      align-items: stretch;
+      overflow-x: auto;
+      background: var(--bg-card);
+    }
+
+    .seg-tab-btn {
+      flex: 1;
+      min-width: 110px;
+      padding: 0.65rem 0.85rem;
+      border: none;
+      border-right: 2px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      white-space: nowrap;
+    }
+
+    .seg-tab-btn:last-child {
+      border-right: none;
+    }
+
+    .seg-tab-btn:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .seg-tab-btn[aria-selected="true"] {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .seg-count-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 900;
+      border: 1px solid currentColor;
+      padding: 0.05rem 0.35rem;
+    }
+
+    /* Article Stream Rows */
+    .article-feed-stream {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .snappy-article-row {
+      display: grid;
+      grid-template-columns: 215px 1fr 180px;
+      align-items: center;
+      border-bottom: 2px solid var(--border-black);
+      background: var(--bg-card);
+      transition: background 0.15s ease;
+    }
+
+    .snappy-article-row:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    [data-theme="dark"] .snappy-article-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .snappy-article-row:last-child {
+      border-bottom: none;
+    }
+
+    .article-thumb-col {
+      border-right: 2px solid var(--border-black);
+      padding: 1.15rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      align-self: stretch;
+    }
+
+    .article-thumb-box {
+      width: 100%;
+      max-width: 185px;
+      aspect-ratio: 16 / 10;
+      border: 2px solid var(--border-black);
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    [data-theme="dark"] .article-thumb-box {
+      box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.15);
+    }
+
+    .snappy-article-row:hover .article-thumb-box {
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0px var(--border-black);
+    }
+
+    .article-thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .snappy-article-row:hover .article-thumb-box img {
+      transform: scale(1.05);
+    }
+
+    .article-info-cluster {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      justify-content: center;
+    }
+
+    .article-kicker-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .snappy-status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1.5px solid var(--border-black);
+      padding: 0.1rem 0.45rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .snappy-status-pill.published {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .snappy-status-pill.revision_draft, .snappy-status-pill.reject {
+      border-style: dashed;
+    }
+
+    .update-ready-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      border: 1.5px solid var(--border-black);
+      padding: 0.1rem 0.45rem;
+      background: var(--bg-card);
+    }
+
+    .article-topic {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .article-read-time {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .article-time-ago {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .article-headline-link {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      color: var(--text-main);
+      display: inline-block;
+      transition: color 0.15s ease;
+    }
+
+    .article-headline-link:hover {
+      text-decoration: underline;
+    }
+
+    .article-excerpt-teaser {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.42;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .review-lock-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      border: 1.5px dashed var(--border-black);
+      padding: 0.35rem 0.65rem;
+      margin-top: 0.35rem;
+      text-transform: uppercase;
+    }
+
+    .peer-review-feedback-bubble {
+      border: 2px dashed var(--border-black);
+      padding: 0.65rem 0.85rem;
+      margin-top: 0.45rem;
+      background: var(--bg-card);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      line-height: 1.32;
+    }
+
+    .feedback-reviewer-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .article-actions-cell {
+      border-left: 2px solid var(--border-black);
+      padding: 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--bg-card);
+      align-self: stretch;
+    }
+
+    .btn-action-snappy {
+      border: 2px dashed var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.45rem 0.65rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      width: 100%;
+      transition: none;
+    }
+
+    .btn-action-snappy:hover:not(:disabled) {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .btn-action-snappy:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-style: dotted;
+    }
+
+    .btn-action-snappy.btn-danger-action:hover:not(:disabled) {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .skeleton-bar-line {
+      background: repeating-linear-gradient(
+        45deg,
+        var(--border-black),
+        var(--border-black) 2px,
+        transparent 2px,
+        transparent 6px
+      );
+      opacity: 0.2;
+    }
+
+    .snappy-empty-block {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .empty-symbol {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+    }
+
+    /* Toast Notifications */
+    .snappy-toast-rack {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .snappy-toast {
+      pointer-events: auto;
+      border: 3px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      padding: 0.75rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      box-shadow: 6px 6px 0px var(--border-black);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 280px;
+      max-width: 440px;
+    }
+
+    /* Modals */
+    .snappy-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1.5rem;
+    }
+
+    .snappy-modal-overlay.open {
+      display: flex;
+    }
+
+    .snappy-modal-pane {
+      background: var(--bg-card);
+      border: 4px solid var(--border-black);
+      box-shadow: var(--shadow-modal);
+      max-width: 840px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .snappy-modal-head {
+      border-bottom: 3px solid var(--border-black);
+      background: var(--border-black);
+      color: var(--bg-card);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .snappy-modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-close-modal {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 2px solid var(--bg-card);
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.82rem;
+      padding: 0.15rem 0.55rem;
+      cursor: pointer;
+    }
+
+    .btn-close-modal:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .snappy-modal-content {
+      padding: 1.75rem;
+      overflow-y: auto;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.35;
+      color: var(--text-body);
+    }
+
+    .snappy-modal-foot {
+      border-top: 3px solid var(--border-black);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: var(--bg-card);
+    }
+
+    .form-field-group {
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-field-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+    }
+
+    .form-text-input,
+    .form-select-box,
+    .form-textarea-box {
+      width: 100%;
+      border: 2px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.65rem 0.75rem;
+    }
+
+    .form-textarea-box {
+      min-height: 110px;
+      font-family: var(--font-body);
+      line-height: 1.35;
+      resize: vertical;
+    }
+
+    /* =====================================================================
+       9. PRINT BROADSHEET STYLESHEET (@media print)
+       ===================================================================== */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+      }
+      .topbar, .topbar-right-actions, .workbench-actions-row, .article-actions-cell, .mail-coupon-block, {
+        display: none !important;
+      }
+      .page-wrapper {
+        padding: 0 !important;
+        max-width: 100% !important;
+        gap: 1.5rem !important;
+      }
+      .snappy-profile-card, .insights-deck, .workbench-card {
+      box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.12);
+    }
+        border: 2px solid #000000 !important;
+        page-break-inside: avoid;
+      }
+      .snappy-article-row {
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 860px) {
+      .snappy-profile-body {
+        grid-template-columns: 1fr;
+      }
+      .author-column-left {
+        border-right: none;
+        border-bottom: 3px solid var(--border-black);
+      }
+      .metric-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .metric-card.col-border {
+        border-right: none;
+        border-bottom: 2px solid var(--border-black);
+      }
+      .snappy-article-row {
+        grid-template-columns: 1fr;
+      }
+      .article-thumb-col {
+        border-right: none;
+        border-bottom: 2px solid var(--border-black);
+        padding: 1rem;
+      }
+      .article-thumb-box {
+        max-width: 100%;
+        height: 180px;
+        aspect-ratio: auto;
+      }
+      .article-actions-cell {
+        border-left: none;
+        border-top: 2px solid var(--border-black);
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .nav-search-wrap, .broadsheet-weather-ticker {
+        display: none;
+      }
+      .masthead-gazette-title {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Topbar -->
+  <header class="topbar">
+    <div class="topbar-container">
+      <div class="brand-section">
+        <a href="/" class="brand-logo-shield" aria-label="Blog Aces Home">A</a>
+        <div class="brand-text-block">
+          <div class="brand-title">
+            <span>Blog Aces</span>
+            <span class="brand-tag">PVGCOET</span>
+          </div>
+          </div>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="nav-search-wrap">
+        <span class="nav-search-icon">☛</span>
+        <input type="text" id="topNavSearch" class="nav-search-input" placeholder="SEARCH STORIES, TAGS..." aria-label="Search articles" />
+        <kbd class="nav-search-kbd">/</kbd>
+      </div>
+
+      <div class="topbar-right-actions">
+        <div id="mockStatusPill" class="mock-badge-pill" style="display: none;" title="Mock Store Active (Change CONFIG.USE_MOCK = false for live backend)">
+          <span>● MOCK ACTIVE</span>
+        </div>
+
+        <a href="/editorial-board.html" class="btn-action-snappy" style="text-decoration: none; padding: 0.35rem 0.75rem;" title="Official Editorial Board Accreditation & Labels Desk">
+          <span>⚖ EDITORIAL DESK</span>
+        </a>
+
+        <button id="themeToggleBtn" class="btn-icon-switch" title="Toggle ink contrast">
+          <span id="themeToggleLabel">✦ DARK</span>
+        </button>
+
+        <a href="/editor" id="openComposerTopBtn" class="btn-primary-write" style="text-decoration: none;" title="Open dedicated blog editor">
+          <span>➔ WRITE BLOG</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Layout -->
+  <main class="page-wrapper" id="mainContent">
+
+    <!-- 1. Academic Press Credential / Fellow Pass (Profile Card) -->
+    <section class="snappy-profile-card" aria-labelledby="creatorNameH1">
+      <div class="snappy-profile-body">
+        <!-- Left: Halftone Portrait & Cut-Out Mail Coupons -->
+        <div class="author-column-left">
+          <div class="avatar-wrapper">
+            <span class="avatar-reg-mark">⊕ ✛</span>
+            <div class="avatar-box" id="avatarContainer">
+              <span>AS</span>
+            </div>
+          </div>
+
+          <div class="author-seal-box">
+            <span>★ OFFICIAL WRITER DESK</span>
+          </div>
+
+          <!-- Cut-Out Mail Coupons for Follow & Subscribe -->
+          <div class="mail-coupon-block">
+            <div class="coupon-cut-label">✂ CUT ALONG DOTTED LINE TO CLAIM ✂</div>
+            <button id="followCouponBtn" class="coupon-action-btn" onclick="toggleFollowCoupon()">
+              <span>[ ✂ FOLLOW AUTHOR ]</span>
+            </button>
+            <button id="subscribeCouponBtn" class="coupon-action-btn" onclick="toggleSubscribeCoupon()">
+              <span>[ ✂ SUBSCRIBE — 100% FREE ]</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Masthead Name, Bio, and Credentials -->
+        <div class="author-column-right">
+          <div class="author-title-compartment">
+            <h1 class="creator-name" id="creatorNameH1">Aarav Sharma</h1>
+            <div class="name-sub-row">
+              <span class="verified-mark">[✔ VERIFIED FELLOW]</span>
+              <span class="creator-handle" id="creatorHandlePill">@aarav_writes</span>
+              <button id="editProfileBtn" class="btn-action-snappy" onclick="openProfileModal()" style="margin-left: auto; width: auto; padding: 0.2rem 0.65rem;" title="Edit author credentials, photo & biography">
+                <span>[ ✎ EDIT PROFILE ]</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="author-bio-compartment">
+            <span class="bio-kicker-header">AUTHOR BIOGRAPHY & INVESTIGATIVE BEAT</span>
+            <div class="creator-bio-box" id="bioBox">
+              <span class="clamped" id="bioContentSpan">Core Committee Member @ <em>ACES PVGCOET</em>. Writing deep technical breakdowns on <em>distributed consensus algorithms</em>, <em>Linux eBPF telemetry</em>, and <em>modern compiler memory safety</em>.</span>
+              <button class="bio-toggle-anchor" id="bioExpandBtn" style="display: none;" aria-expanded="false">Read more ➔</button>
+            </div>
+
+            <!-- Signature Ink Line -->
+            <div class="fellow-signature-row">
+              <span>AUTHORIZATION SIGNATURE:</span>
+              <span class="signature-ink-line">Aarav Sharma — Systems Lead</span>
+              <span>VERIFIED: 2026</span>
+            </div>
+          </div>
+
+          <div class="author-footer-compartment">
+            <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+              <div class="badge-pills-cluster" id="authorBadgesCluster"></div>
+              <a href="/editorial-board.html" class="btn-action-snappy" style="width: auto; padding: 0.2rem 0.65rem; text-decoration: none; font-size: 0.72rem;" title="Open ACES Editorial Board Accreditation Registry">
+                <span>⚖ EDITORIAL DESK ➔</span>
+              </a>
+            </div>
+            <div class="social-anchors-group" id="socialAnchorsBox"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- 2. Editorial Performance & Metrics -->
+    <section class="insights-deck" aria-labelledby="insightsSectionTitle">
+      <div class="insights-header-row">
+        <h2 class="insights-title" id="insightsSectionTitle">EDITORIAL PERFORMANCE & READERSHIP TRAJECTORY</h2>
+      </div>
+
+      <!-- Asymmetrical 3-Column Metrics Grid -->
+      <div class="metric-cards-grid">
+        <div class="metric-card col-border">
+          <div class="metric-top-bar">
+            <span class="metric-symbol">■</span>
+            <span class="metric-tag-label">ALL DISPATCHES</span>
+          </div>
+          <div class="metric-data-block">
+            <span class="metric-number" id="insightsPostedCount">0</span>
+            <span class="metric-label">Stories Filed</span>
+          </div>
+        </div>
+
+        <div class="metric-card col-border">
+          <div class="metric-top-bar">
+            <span class="metric-symbol">▲</span>
+            <span class="metric-tag-label">FACULTY APPROVED</span>
+          </div>
+          <div class="metric-data-block">
+            <span class="metric-number" id="insightsPassedCount">0</span>
+            <span class="metric-label">Passed & Published</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-top-bar">
+            <span class="metric-symbol">◆</span>
+            <span class="metric-tag-label">PEER REVISIONS</span>
+          </div>
+          <div class="metric-data-block">
+            <span class="metric-number" id="insightsChangesCount">0</span>
+            <span class="metric-label">Asked to Change</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Stories & Editorial Pipeline (Workbench) -->
+    <section class="workbench-card" aria-labelledby="workbenchHeading">
+      <div class="workbench-header">
+        <div class="workbench-top-row">
+          <div class="workbench-title-group">
+            <h2 id="workbenchHeading">STORIES & EDITORIAL PIPELINE</h2>
+            <span class="workbench-count-tag" id="liveArticlesSummaryTag">0 stories</span>
+          </div>
+
+          <div class="workbench-actions-row">
+            <div class="search-filter-box">
+              <span class="search-filter-icon">☛</span>
+              <input type="text" id="inlineSearchInput" class="search-filter-input" placeholder="FILTER TITLES OR TAGS..." aria-label="Search articles" />
+            </div>
+
+            <select id="sortSelector" class="sort-dropdown" aria-label="Sort articles">
+              <option value="modified_desc" selected>RECENTLY MODIFIED</option>
+              <option value="modified_asc">OLDEST DISPATCH</option>
+              <option value="title_asc">TITLE (A → Z)</option>
+            </select>
+
+            <a href="/editor" id="quickCreateDraftBtn" class="btn-action-snappy btn-primary-action" style="text-decoration: none;" title="Open dedicated blog editor">
+              <span>➔ WRITE BLOG</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Connected Segmented Status Tabs -->
+        <div class="segmented-tabs-deck" role="tablist" aria-label="Filter stories by status">
+          <button class="seg-tab-btn" data-filter="ALL" role="tab" aria-selected="true">
+            <span>ALL STORIES</span>
+            <span class="seg-count-badge" id="cnt-ALL">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="PUBLISHED" role="tab" aria-selected="false">
+            <span>PUBLISHED</span>
+            <span class="seg-count-badge" id="cnt-PUBLISHED">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="UNDER_REVIEW" role="tab" aria-selected="false">
+            <span>IN REVIEW</span>
+            <span class="seg-count-badge" id="cnt-UNDER_REVIEW">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="DRAFT" role="tab" aria-selected="false">
+            <span>DRAFTS</span>
+            <span class="seg-count-badge" id="cnt-DRAFT">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="REVISION_DRAFT" role="tab" aria-selected="false">
+            <span>REVISIONS</span>
+            <span class="seg-count-badge" id="cnt-REVISION_DRAFT">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="REJECT" role="tab" aria-selected="false">
+            <span>NEEDS CHANGES</span>
+            <span class="seg-count-badge" id="cnt-REJECT">0</span>
+          </button>
+          <button class="seg-tab-btn" data-filter="ARCHIVED" role="tab" aria-selected="false">
+            <span>ARCHIVED</span>
+            <span class="seg-count-badge" id="cnt-ARCHIVED">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Articles Feed Stream Container -->
+      <div class="article-feed-stream" id="storiesStreamContainer" role="region" aria-live="polite">
+        <!-- Rows injected via JavaScript -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification Deck -->
+  <div class="snappy-toast-rack" id="toastContainer" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- Broadsheet Reading Proof Modal -->
+  <div class="snappy-modal-overlay" id="readerModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalStoryTitle">
+    <div class="snappy-modal-pane">
+      <div class="snappy-modal-head">
+        <h3 class="snappy-modal-title" id="modalStoryTitle">BROADSHEET PROOF & PREVIEW</h3>
+        <button id="closeReaderModalBtn" class="btn-close-modal" aria-label="Close reader">[ ✕ CLOSE ]</button>
+      </div>
+      <div class="snappy-modal-content" id="modalStoryBody">
+        <!-- Injected content -->
+      </div>
+      <div class="snappy-modal-foot">
+        <a id="modalOpenLiveBtn" href="#" class="btn-action-snappy btn-primary-action" target="_blank" rel="noopener noreferrer">
+          <span>☛ OPEN LIVE DISPATCH</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Composer Modal -->
+  <div class="snappy-modal-overlay" id="composerModalOverlay" role="dialog" aria-modal="true" aria-labelledby="composerTitleHeading">
+    <div class="snappy-modal-pane">
+      <div class="snappy-modal-head">
+        <h3 class="snappy-modal-title" id="composerTitleHeading">DRAFT NEW TECHNICAL DISPATCH</h3>
+        <button id="closeComposerModalBtn" class="btn-close-modal" aria-label="Close composer">[ ✕ CANCEL ]</button>
+      </div>
+      <div class="snappy-modal-content">
+        <form id="composerStoryForm" onsubmit="submitNewDraft(event)">
+          <div class="form-field-group">
+            <label class="form-field-label" for="inpTitle">Dispatch Headline</label>
+            <input type="text" id="inpTitle" class="form-text-input" placeholder="e.g. Profiling Linux eBPF in High-Throughput Microservices" required />
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="selCategory">Category Track</label>
+            <select id="selCategory" class="form-select-box">
+              <option value="Systems & Kernel">Systems & Kernel</option>
+              <option value="Distributed Consensus">Distributed Consensus</option>
+              <option value="Compiler Architectures">Compiler Architectures</option>
+              <option value="Cloud Infrastructure">Cloud Infrastructure</option>
+              <option value="Applied Cryptography">Applied Cryptography</option>
+              <option value="Campus Engineering">Campus Engineering</option>
+            </select>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="txtIntro">Article Abstract / Opening Thesis</label>
+            <textarea id="txtIntro" class="form-textarea-box" placeholder="Write an executive summary or opening thesis for the peer review committee..." required></textarea>
+          </div>
+
+          <div class="snappy-modal-foot" style="padding-right: 0; padding-bottom: 0; background: none; border: none;">
+            <button type="button" class="btn-action-snappy" onclick="closeComposerModal()">[ ✕ CANCEL ]</button>
+            <button type="submit" class="btn-primary-write">➔ CREATE INITIAL DRAFT</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CLIENT APPLICATION LOGIC
+       ===================================================================== -->
+  <script>
+    /**
+     * =====================================================================
+     * 1. CONFIGURATION
+     * =====================================================================
+     */
+    const CONFIG = {
+      API_BASE_URL: "http://localhost:3000",
+      USE_MOCK: true,
+      CURRENT_USER: { id: "writer-101", role: "WRITER" },
+      REQUEST_TIMEOUT_MS: 10000
+    };
+
+    /**
+     * =====================================================================
+     * 2. MOCK DATA STORE
+     * =====================================================================
+     */
+    const MOCK = {
+      profile: {
+        id: "writer-101",
+        name: "Aarav Sharma",
+        username: "aarav_writes",
+        role: "WRITER",
+        status: "ACTIVE",
+        profileImg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        linkedIn: "https://linkedin.com/in/aarav-sharma",
+        github: "https://github.com/aarav-sharma",
+        bio: "Core Committee Member @ ACES PVGCOET. Writing deep technical breakdowns on distributed consensus algorithms, Linux eBPF telemetry, and modern compiler memory safety.",
+        labels: [
+          { key: "core-contributor", text: "Top Contributor '25", emoji: "★", awarded: true },
+          { key: "sys-track", text: "Systems Lead", emoji: "⚡", awarded: false }
+        ],
+        createdAt: "2024-02-15T09:00:00.000Z"
+      },
+      blogs: [
+        {
+          id: "11111111-1111-4111-a111-111111111111",
+          slug: "understanding-linux-ebpf-tracing",
+          title: "Deep Dive into Linux eBPF Tracing for Cloud-Native Observability",
+          thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Dr. A. Patil",
+          status: "PUBLISHED",
+          category: "Kernel & OS",
+          tags: ["linux", "kernel", "ebpf", "observability"],
+          readsCount: 14200,
+          readTime: "7 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 2,
+          latestPublishedVersion: 2,
+          createdAt: "2024-03-01T10:00:00.000Z",
+          modifiedAt: "2024-03-24T14:30:00.000Z"
+        },
+        {
+          id: "22222222-2222-4222-a222-222222222222",
+          slug: "rust-memory-safety-patterns",
+          title: "Memory Safety Without Garbage Collection: How Rust Rewrote the Rules",
+          thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Prof. S. Kulkarni",
+          status: "PUBLISHED",
+          category: "Systems & Compilers",
+          tags: ["rust", "memory", "concurrency"],
+          readsCount: 9800,
+          readTime: "6 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 3,
+          latestPublishedVersion: 2,
+          createdAt: "2024-03-10T08:15:00.000Z",
+          modifiedAt: "2024-03-26T18:45:00.000Z"
+        },
+        {
+          id: "33333333-3333-4333-a333-333333333333",
+          slug: "raft-consensus-visualization-go",
+          title: "Building an Interactive Raft Consensus Visualizer in Go",
+          thumbnail: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Prof. S. Kulkarni",
+          status: "UNDER_REVIEW",
+          category: "Distributed Systems",
+          tags: ["raft", "consensus", "golang"],
+          readsCount: 0,
+          readTime: "8 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 1,
+          latestPublishedVersion: 0,
+          createdAt: "2024-03-18T11:00:00.000Z",
+          modifiedAt: "2024-03-25T09:20:00.000Z"
+        },
+        {
+          id: "44444444-4444-4444-a444-444444444444",
+          slug: "zero-knowledge-proofs-for-engineers",
+          title: "Demystifying Zero-Knowledge Rollups for Everyday Software Engineers",
+          thumbnail: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: null,
+          status: "DRAFT",
+          category: "Applied Cryptography",
+          tags: ["zkp", "crypto", "security"],
+          readsCount: 0,
+          readTime: "5 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 1,
+          latestPublishedVersion: 0,
+          createdAt: "2024-03-20T16:00:00.000Z",
+          modifiedAt: "2024-03-27T07:10:00.000Z"
+        },
+        {
+          id: "55555555-5555-4555-a555-555555555555",
+          slug: "optimizing-nextjs-turbopack-builds",
+          title: "Slashing Monorepo CI/CD Build Times with Turbopack and Multi-Stage Docker",
+          thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Dr. A. Patil",
+          status: "REVISION_DRAFT",
+          category: "Web Infrastructure",
+          tags: ["nextjs", "turbopack", "devops"],
+          readsCount: 4200,
+          readTime: "4 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 2,
+          latestPublishedVersion: 1,
+          createdAt: "2024-02-28T14:00:00.000Z",
+          modifiedAt: "2024-03-26T11:50:00.000Z"
+        },
+        {
+          id: "66666666-6666-4666-a666-666666666666",
+          slug: "quantum-computing-algorithms-primer",
+          title: "A Practical Primer to Grover's Search Algorithm with Qiskit Simulations",
+          thumbnail: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Dr. A. Patil",
+          status: "REJECT",
+          category: "Emerging Tech",
+          tags: ["quantum", "qiskit", "physics"],
+          readsCount: 0,
+          readTime: "6 min read",
+          rejectionReason: "Please expand on noise benchmark methodology and empirical gate fidelity measurements in Section 3 before resubmitting.",
+          latestRevisionVersion: 1,
+          latestPublishedVersion: 0,
+          createdAt: "2024-03-05T09:30:00.000Z",
+          modifiedAt: "2024-03-22T13:40:00.000Z"
+        },
+        {
+          id: "77777777-7777-4777-a777-777777777777",
+          slug: "intro-to-web-assembly-compilation",
+          title: "Compiling C++ to WebAssembly: Micro-benchmarks Against Native V8 Runtime",
+          thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80",
+          author: "writer-101",
+          reviewer: "Prof. S. Kulkarni",
+          status: "ARCHIVED",
+          category: "Web Infrastructure",
+          tags: ["wasm", "cpp", "v8"],
+          readsCount: 5100,
+          readTime: "5 min read",
+          rejectionReason: null,
+          latestRevisionVersion: 1,
+          latestPublishedVersion: 1,
+          createdAt: "2023-11-12T10:00:00.000Z",
+          modifiedAt: "2024-01-15T15:20:00.000Z"
+        }
+      ]
+    };
+
+    /**
+     * =====================================================================
+     * 3. IN-MEMORY STATE
+     * =====================================================================
+     */
+    const STATE = {
+      profile: null,
+      blogs: [],
+      activeFilter: "ALL",
+      searchQuery: "",
+      sortKey: "modified_desc",
+      inProgressIds: new Set(),
+      bioExpanded: false,
+      theme: "light",
+      isFollowing: false,
+      isSubscribed: false
+    };
+
+    /**
+     * =====================================================================
+     * 4. API CLIENT
+     * =====================================================================
+     */
+    class ApiError extends Error {
+      constructor(status, message) {
+        super(message);
+        this.status = status;
+        this.name = "ApiError";
+      }
+    }
+
+    function buildHeaders(existing = {}) {
+      return Object.assign({}, existing, {
+        "x-user-id": CONFIG.CURRENT_USER.id,
+        "x-user-role": CONFIG.CURRENT_USER.role
+      });
+    }
+
+    function normalizeNestError(data, status) {
+      if (!data) return "Backend request failed (HTTP " + status + ").";
+      if (typeof data.message === "string") return data.message;
+      if (Array.isArray(data.message)) return data.message.join(", ");
+      return "Server Error (" + status + ")";
+    }
+
+    async function apiRequest(method, path, body = null) {
+      if (CONFIG.USE_MOCK) {
+        return mockDispatcher(method, path, body);
+      }
+
+      const controller = new AbortController();
+      const timeoutTimer = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT_MS);
+      const url = CONFIG.API_BASE_URL.replace(/\/+$/, "") + path;
+      const headers = buildHeaders(body ? { "Content-Type": "application/json" } : {});
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : null,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutTimer);
+        let data = null;
+        const ct = response.headers.get("content-type");
+        if (ct && ct.includes("application/json")) data = await response.json();
+        if (!response.ok) throw new ApiError(response.status, normalizeNestError(data, response.status));
+        return data;
+      } catch (err) {
+        clearTimeout(timeoutTimer);
+        if (err.name === "AbortError") throw new ApiError(408, "Backend request timed out");
+        if (err instanceof ApiError) throw err;
+        throw new ApiError(0, err.message || "Network connection failure.");
+      }
+    }
+
+    async function mockDispatcher(method, path, body) {
+      await new Promise(r => setTimeout(r, 120));
+
+      if (method === "GET" && path.startsWith("/users/")) {
+        return Object.assign({}, MOCK.profile);
+      }
+
+      if ((method === "PUT" || method === "PATCH") && path.startsWith("/users/")) {
+        MOCK.profile = Object.assign({}, MOCK.profile, body);
+        return Object.assign({}, MOCK.profile);
+      }
+
+      if (method === "POST" && path.includes("/badges")) {
+        if (!Array.isArray(MOCK.profile.labels)) MOCK.profile.labels = [];
+        MOCK.profile.labels.push(body);
+        return { success: true, badge: body };
+      }
+
+      if (method === "GET" && path === "/blogs") {
+        return JSON.parse(JSON.stringify(MOCK.blogs));
+      }
+
+      const contentMatch = path.match(/^\/blogs\/([a-zA-Z0-9-]+)\/content/);
+      if (method === "GET" && contentMatch) {
+        const blog = MOCK.blogs.find(b => b.id === contentMatch[1]);
+        if (!blog) throw new ApiError(404, "Article not found");
+        return {
+          id: "content-" + blog.id,
+          blogId: blog.id,
+          version: blog.latestPublishedVersion || blog.latestRevisionVersion || 1,
+          content: {
+            type: "doc",
+            content: [
+              {
+                type: "paragraph",
+                content: [{ type: "text", text: "Complete technical paper for \"" + blog.title + "\". This dispatch details systems architecture, kernel probe attachments, telemetry benchmarks, and production deployment considerations tailored for the ACES broadsheet gazette." }]
+              }
+            ]
+          },
+          createdAt: blog.modifiedAt
+        };
+      }
+
+      const blogMatch = path.match(/^\/blogs\/([a-zA-Z0-9-]+)$/);
+      if (method === "GET" && blogMatch) {
+        const blog = MOCK.blogs.find(b => b.id === blogMatch[1]);
+        if (!blog) throw new ApiError(404, "Article not found");
+        return Object.assign({}, blog);
+      }
+
+      const pubMatch = path.match(/^\/blogs\/([a-zA-Z0-9-]+)\/publish$/);
+      if (method === "PATCH" && pubMatch) {
+        const blog = MOCK.blogs.find(b => b.id === pubMatch[1]);
+        if (!blog) throw new ApiError(404, "Article not found");
+        if (blog.latestRevisionVersion === 0) {
+          throw new ApiError(400, "Cannot publish: Revision must be > 0");
+        }
+        blog.status = "PUBLISHED";
+        blog.latestPublishedVersion = blog.latestRevisionVersion;
+        blog.modifiedAt = new Date().toISOString();
+        return Object.assign({}, blog);
+      }
+
+      const arcMatch = path.match(/^\/blogs\/([a-zA-Z0-9-]+)\/archive$/);
+      if (method === "PATCH" && arcMatch) {
+        const blog = MOCK.blogs.find(b => b.id === arcMatch[1]);
+        if (!blog) throw new ApiError(404, "Article not found");
+        if (blog.status === "UNDER_REVIEW") {
+          throw new ApiError(400, "Cannot archive an article while actively under review");
+        }
+        blog.status = "ARCHIVED";
+        blog.modifiedAt = new Date().toISOString();
+        return Object.assign({}, blog);
+      }
+
+      throw new ApiError(404, "Mock endpoint not found: " + method + " " + path);
+    }
+
+    /**
+     * =====================================================================
+     * 5. DATA LOADERS
+     * =====================================================================
+     */
+    async function loadProfile() {
+      // 1. Check local storage for custom user-provided credentials
+      try {
+        const savedCustomProfile = localStorage.getItem("aces_user_profile");
+        if (savedCustomProfile) {
+          STATE.profile = JSON.parse(savedCustomProfile);
+          renderProfile();
+          return;
+        }
+      } catch (e) {}
+
+      // 2. Fetch from backend / mock API
+      try {
+        const profile = await apiRequest("GET", "/users/" + CONFIG.CURRENT_USER.id);
+        STATE.profile = profile;
+      } catch (err) {
+        STATE.profile = {
+          id: CONFIG.CURRENT_USER.id,
+          name: "Aarav Sharma",
+          username: "aarav_writes",
+          role: "WRITER",
+          profileImg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+          bio: "Core Committee Member @ ACES PVGCOET. Writing deep technical breakdowns on distributed consensus algorithms, Linux eBPF telemetry, and modern compiler memory safety.",
+          labels: [
+            { key: "core-contributor", text: "TOP CONTRIBUTOR '25", emoji: "★", awarded: true, awardedBy: "ACES Editorial Board", awardedAt: "2025-01-10T10:00:00Z" },
+            { key: "sys-track", text: "SYSTEMS LEAD", emoji: "⚡", awarded: false, awardedBy: "ACES Faculty Committee", awardedAt: "2025-02-14T12:00:00Z" }
+          ],
+          createdAt: new Date().toISOString()
+        };
+      }
+      renderProfile();
+    }
+
+    async function loadBlogs() {
+      renderSkeletonFeed();
+      try {
+        const response = await apiRequest("GET", "/blogs");
+        let list = Array.isArray(response) ? response : [];
+
+        // Check if author created or edited blogs in /editor
+        try {
+          const editorSaved = localStorage.getItem("aces_editor_blogs");
+          if (editorSaved) {
+            const extraBlogs = JSON.parse(editorSaved);
+            if (Array.isArray(extraBlogs)) {
+              extraBlogs.forEach(eb => {
+                const existingIdx = list.findIndex(b => b.id === eb.id);
+                if (existingIdx !== -1) {
+                  list[existingIdx] = Object.assign({}, list[existingIdx], eb);
+                } else {
+                  list.unshift(eb);
+                }
+              });
+            }
+          }
+        } catch (e) {}
+
+        STATE.blogs = list
+          .filter(b => b.status !== "DELETED")
+          .filter(b => b.author === CONFIG.CURRENT_USER.id);
+
+        updateTabCounters();
+        updateInsightsStats();
+        applyFiltersAndRender();
+      } catch (err) {
+        renderErrorState(err.message || "Failed to connect to blog service.");
+      }
+    }
+
+    /**
+     * =====================================================================
+     * 6. PRESENTATION & RENDERING
+     * =====================================================================
+     */
+    function updateInsightsStats() {
+      const posted = STATE.blogs.length;
+      const passed = STATE.blogs.filter(b => b.status === "PUBLISHED").length;
+      const askedToChange = STATE.blogs.filter(b => b.status === "REJECT" || b.status === "REVISION_DRAFT").length;
+
+      const postedEl = document.getElementById("insightsPostedCount");
+      const passedEl = document.getElementById("insightsPassedCount");
+      const changeEl = document.getElementById("insightsChangesCount");
+
+      if (postedEl) postedEl.textContent = posted;
+      if (passedEl) passedEl.textContent = passed;
+      if (changeEl) changeEl.textContent = askedToChange;
+    }
+
+    function updateTabCounters() {
+      const statuses = ["ALL", "PUBLISHED", "UNDER_REVIEW", "DRAFT", "REVISION_DRAFT", "REJECT", "ARCHIVED"];
+      statuses.forEach(st => {
+        const el = document.getElementById("cnt-" + st);
+        if (!el) return;
+        if (st === "ALL") {
+          el.textContent = STATE.blogs.length;
+        } else {
+          el.textContent = STATE.blogs.filter(b => b.status === st).length;
+        }
+      });
+    }
+
+    function applyFiltersAndRender() {
+      let filtered = STATE.blogs.slice();
+
+      if (STATE.activeFilter !== "ALL") {
+        filtered = filtered.filter(b => b.status === STATE.activeFilter);
+      }
+
+      if (STATE.searchQuery.trim() !== "") {
+        const q = STATE.searchQuery.toLowerCase();
+        filtered = filtered.filter(b =>
+          b.title.toLowerCase().includes(q) ||
+          b.category.toLowerCase().includes(q) ||
+          (b.tags && b.tags.some(t => t.toLowerCase().includes(q)))
+        );
+      }
+
+      if (STATE.sortKey === "modified_desc") {
+        filtered.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt));
+      } else if (STATE.sortKey === "modified_asc") {
+        filtered.sort((a, b) => new Date(a.modifiedAt) - new Date(b.modifiedAt));
+      } else if (STATE.sortKey === "title_asc") {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      const summaryTag = document.getElementById("liveArticlesSummaryTag");
+      if (summaryTag) {
+        summaryTag.textContent = filtered.length + " DISPATCH" + (filtered.length === 1 ? "" : "ES");
+      }
+
+      renderArticleList(filtered);
+    }
+
+    function renderProfile() {
+      if (!STATE.profile) return;
+      const p = STATE.profile;
+
+      const container = document.getElementById("avatarContainer");
+      if (container) {
+        if (p.profileImg) {
+          container.innerHTML = '<img src="' + escapeHtml(p.profileImg) + '" alt="' + escapeHtml(p.name) + '" />';
+        } else {
+          container.innerHTML = '<span>' + escapeHtml(getMonogram(p.name || p.username)) + '</span>';
+        }
+      }
+
+      document.getElementById("creatorHandlePill").textContent = "@" + (p.username || p.id);
+      document.getElementById("creatorNameH1").textContent = p.name || p.username;
+
+      const bioBox = document.getElementById("bioBox");
+      const bioSpan = document.getElementById("bioContentSpan");
+      const bioBtn = document.getElementById("bioExpandBtn");
+
+      if (bioBox && bioSpan) {
+        if (p.bio && p.bio.trim() !== "") {
+          bioBox.style.display = "block";
+          bioSpan.innerHTML = "Core Committee Member @ <em>ACES PVGCOET</em>. Writing deep technical breakdowns on <em>distributed consensus algorithms</em>, <em>Linux eBPF telemetry</em>, and <em>modern compiler memory safety</em>.";
+          requestAnimationFrame(() => {
+            if (bioSpan.scrollHeight > bioSpan.clientHeight + 2) {
+              bioBtn.style.display = "inline";
+            } else {
+              bioBtn.style.display = "none";
+            }
+          });
+        }
+      }
+
+      const badgesCluster = document.getElementById("authorBadgesCluster");
+      if (badgesCluster) {
+        badgesCluster.innerHTML = "";
+        if (Array.isArray(p.labels)) {
+          p.labels.forEach(lbl => {
+            const badge = document.createElement("span");
+            badge.className = lbl.awarded ? "tag-badge award" : "tag-badge";
+            const tooltip = (lbl.awardedBy ? 'Accredited by ' + lbl.awardedBy : 'Official Accolade') + (lbl.awardedAt ? ' on ' + new Date(lbl.awardedAt).toLocaleDateString() : '');
+            badge.title = tooltip;
+            badge.innerHTML = (lbl.emoji ? '<span>' + escapeHtml(lbl.emoji) + '</span>' : '') + '<span>' + escapeHtml(lbl.text) + '</span>';
+            badgesCluster.appendChild(badge);
+          });
+        }
+      }
+
+      const socialBox = document.getElementById("socialAnchorsBox");
+      if (socialBox) {
+        socialBox.innerHTML = "";
+        if (p.github) {
+          const gh = document.createElement("a");
+          gh.href = p.github;
+          gh.target = "_blank";
+          gh.rel = "noopener noreferrer";
+          gh.className = "social-link-pill";
+          gh.innerHTML = "<span>☛ GITHUB</span>";
+          socialBox.appendChild(gh);
+        }
+
+        if (p.linkedIn) {
+          const li = document.createElement("a");
+          li.href = p.linkedIn;
+          li.target = "_blank";
+          li.rel = "noopener noreferrer";
+          li.className = "social-link-pill";
+          li.innerHTML = "<span>☛ LINKEDIN</span>";
+          socialBox.appendChild(li);
+        }
+      }
+    }
+
+    function renderSkeletonFeed() {
+      const container = document.getElementById("storiesStreamContainer");
+      if (!container) return;
+      container.innerHTML = `
+        <div style="padding: 1.5rem; border-bottom: 2px solid var(--border-black);">
+          <div class="skeleton-bar-line" style="height: 24px; width: 65%; margin-bottom: 8px;"></div>
+          <div class="skeleton-bar-line" style="height: 14px; width: 35%;"></div>
+        </div>
+        <div style="padding: 1.5rem; border-bottom: 2px solid var(--border-black);">
+          <div class="skeleton-bar-line" style="height: 24px; width: 50%; margin-bottom: 8px;"></div>
+          <div class="skeleton-bar-line" style="height: 14px; width: 30%;"></div>
+        </div>
+      `;
+    }
+
+    function renderErrorState(msg) {
+      const container = document.getElementById("storiesStreamContainer");
+      if (!container) return;
+      container.innerHTML = `
+        <div class="snappy-empty-block">
+          <div class="empty-symbol">[ ✕ ]</div>
+          <h3 style="font-size: 1.25rem; font-weight: 900;">CONNECTION INTERRUPTED</h3>
+          <p style="font-family: var(--font-mono); font-size: 0.85rem; max-width: 420px;">` + escapeHtml(msg) + `</p>
+          <button class="btn-action-snappy btn-primary-action" onclick="loadBlogs()">
+            <span>➔ RETRY SYNC</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderArticleList(articles) {
+      const container = document.getElementById("storiesStreamContainer");
+      if (!container) return;
+
+      if (articles.length === 0) {
+        if (STATE.activeFilter === "ALL" && STATE.searchQuery.trim() === "") {
+          container.innerHTML = `
+            <div class="snappy-empty-block">
+              <div class="empty-symbol">¶</div>
+              <h3 style="font-size: 1.35rem; font-weight: 900;">NO DISPATCHES FILED YET</h3>
+              <p style="font-family: var(--font-body); font-size: 0.95rem; max-width: 440px;">Commence composition of your next technical breakdown or system architecture analysis for the student body.</p>
+              <button class="btn-primary-write" onclick="openComposerModal()">
+                <span>➔ COMPOSE FIRST DISPATCH</span>
+              </button>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="snappy-empty-block">
+              <div class="empty-symbol">☛ ?</div>
+              <h3 style="font-size: 1.35rem; font-weight: 900;">NO MATCHING DISPATCHES</h3>
+              <p style="font-family: var(--font-mono); font-size: 0.85rem;">Modify search query parameters or select another editorial tab.</p>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      container.innerHTML = "";
+      articles.forEach(blog => {
+        container.appendChild(createSnappyRow(blog));
+      });
+    }
+
+    function createSnappyRow(blog) {
+      const row = document.createElement("article");
+      row.className = "snappy-article-row";
+      row.id = "story-row-" + blog.id;
+
+      const relTime = formatRelativeTime(blog.modifiedAt);
+      const fullDate = new Date(blog.modifiedAt).toLocaleString();
+      const statusKey = (blog.status || "DRAFT").toLowerCase();
+      const statusLabel = formatStatusTitle(blog.status);
+      const isPendingUpdate = blog.status === "PUBLISHED" && blog.latestRevisionVersion > blog.latestPublishedVersion;
+      const readMetric = blog.readsCount ? (blog.readsCount / 1000).toFixed(1) + "k reads" : "Unpublished";
+
+      let reviewNoteHtml = "";
+      if (blog.status === "UNDER_REVIEW") {
+        reviewNoteHtml = '<div class="review-lock-indicator">🔒 ARTICLE CURRENTLY UNDER EDITORIAL REVIEW</div>';
+      } else if (blog.status === "REJECT" && blog.rejectionReason) {
+        reviewNoteHtml = `
+          <div class="peer-review-feedback-bubble">
+            <div class="feedback-reviewer-label">EDITORIAL REVISION FEEDBACK</div>
+            <div>` + escapeHtml(blog.rejectionReason) + `</div>
+          </div>
+        `;
+      }
+
+      const EXCERPTS = {
+        "11111111-1111-4111-a111-111111111111": "High-throughput kernel tracing and zero-overhead observability for distributed cloud-native microservices.",
+        "22222222-2222-4222-a222-222222222222": "How lifetime bounds, affine type systems, and ownership semantics eliminated data races without garbage collection.",
+        "33333333-3333-4333-a333-333333333333": "Benchmarking Raft leader election vs. Byzantine fault tolerance under asymmetric cross-region network partitions.",
+        "44444444-4444-4444-a444-444444444444": "Mathematical fundamentals of polynomial commitments and arithmetic circuits for zero-knowledge verifiable compute.",
+        "55555555-5555-4555-a555-555555555555": "Slashing monorepo CI/CD build cycles with Rust-native incremental compilation and multi-stage Docker caching.",
+        "66666666-6666-4666-a666-666666666666": "Practical amplitude amplification primer with quantum gate fidelity simulations and noise benchmarks in Qiskit.",
+        "77777777-7777-4777-a777-777777777777": "Compiling native C++ modules to WebAssembly bytecode with runtime V8 micro-benchmarks and memory limits."
+      };
+      const excerptText = EXCERPTS[blog.id] || blog.title + " — Academic dispatch and technical report.";
+
+      const thumbHtml = blog.thumbnail
+        ? '<img src="' + escapeHtml(blog.thumbnail) + '" alt="' + escapeHtml(blog.title) + '" />'
+        : '<span>§</span>';
+
+      row.innerHTML = `
+        <div class="article-thumb-col">
+          <div class="article-thumb-box">
+            ` + thumbHtml + `
+          </div>
+        </div>
+
+        <div class="article-info-cluster">
+          <div class="article-kicker-meta">
+            <span class="snappy-status-pill ` + statusKey + `">
+              <span>` + escapeHtml(statusLabel) + `</span>
+            </span>
+
+            ` + (isPendingUpdate ? '<span class="update-ready-pill" title="Revision v' + blog.latestRevisionVersion + ' is pending publication">v' + blog.latestRevisionVersion + ' UPDATE READY</span>' : '') + `
+
+            <span class="article-topic">[ ` + escapeHtml(blog.category || "General") + ` ]</span>
+            <span class="article-read-time">• ` + escapeHtml(blog.readTime || "5 min read").toUpperCase() + `</span>
+            <span class="article-time-ago" title="` + escapeHtml(fullDate) + `">• UPDATED ` + escapeHtml(relTime).toUpperCase() + `</span>
+          </div>
+
+          <a href="javascript:void(0)" class="article-headline-link" onclick="openStoryPreviewById('` + blog.id + `')">
+            ` + escapeHtml(blog.title) + `
+          </a>
+
+          <p class="article-excerpt-teaser">
+            ` + escapeHtml(excerptText) + `
+          </p>
+
+          ` + reviewNoteHtml + `
+        </div>
+
+        <div class="article-actions-cell" id="actions-zone-` + blog.id + `">
+          <!-- Actions attached here -->
+        </div>
+      `;
+
+      const actionsZone = row.querySelector("#actions-zone-" + blog.id);
+      renderRowActions(actionsZone, blog);
+
+      return row;
+    }
+
+    function renderRowActions(container, blog) {
+      container.innerHTML = "";
+      const isBusy = STATE.inProgressIds.has(blog.id);
+
+      if (isBusy) {
+        container.innerHTML = `
+          <div class="btn-action-snappy" style="cursor: wait;">
+            <span>UPDATING...</span>
+          </div>
+        `;
+        return;
+      }
+
+      // 1. Preview
+      const previewBtn = document.createElement("button");
+      previewBtn.className = "btn-action-snappy";
+      previewBtn.innerHTML = "<span>[ ☛ PREVIEW ]</span>";
+      previewBtn.addEventListener("click", () => openStoryPreview(blog));
+      container.appendChild(previewBtn);
+
+      // 2. Edit
+      let canEdit = false;
+      let editHint = "";
+
+      if (blog.status === "UNDER_REVIEW") {
+        editHint = "Locked: Article currently undergoing editorial review";
+      } else if (blog.status === "ARCHIVED") {
+        editHint = "Archived articles are read-only";
+      } else {
+        canEdit = true;
+      }
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-action-snappy";
+      editBtn.innerHTML = "<span>[ ✂ EDIT ]</span>";
+      if (!canEdit) {
+        editBtn.disabled = true;
+        editBtn.setAttribute("data-tooltip", editHint);
+      } else {
+        editBtn.addEventListener("click", () => {
+          showToast("Opening composition desk for \"" + blog.title + "\"...", "info");
+        });
+      }
+      container.appendChild(editBtn);
+
+      // 3. Publish
+      let canPublish = false;
+      let publishHint = "";
+      const hasContent = blog.latestRevisionVersion > 0;
+
+      if (blog.status === "DRAFT") {
+        if (!hasContent) publishHint = "Cannot publish: No revision content saved";
+        else canPublish = true;
+      } else if (blog.status === "REVISION_DRAFT") {
+        canPublish = true;
+      } else if (blog.status === "UNDER_REVIEW") {
+        publishHint = "Article is currently under editorial review";
+      } else if (blog.status === "PUBLISHED") {
+        if (blog.latestRevisionVersion > blog.latestPublishedVersion) {
+          canPublish = true;
+        } else {
+          publishHint = "Article is published and up to date";
+        }
+      } else if (blog.status === "UNDER_REVIEW") {
+        publishHint = "Under review by editor: Cannot self-publish";
+      } else if (blog.status === "REJECT") {
+        publishHint = "Make required revisions before resubmitting";
+      } else if (blog.status === "ARCHIVED") {
+        publishHint = "Archived articles cannot be published";
+      }
+
+      const pubBtn = document.createElement("button");
+      pubBtn.className = "btn-action-snappy btn-primary-action";
+      pubBtn.innerHTML = "<span>[ ➔ PUBLISH ]</span>";
+      if (!canPublish) {
+        pubBtn.disabled = true;
+        pubBtn.setAttribute("data-tooltip", publishHint);
+      } else {
+        pubBtn.addEventListener("click", () => runPublish(blog));
+      }
+      container.appendChild(pubBtn);
+
+      // 4. Archive
+      let canArchive = false;
+      let archiveHint = "";
+
+      if (blog.status === "DRAFT" || blog.status === "PUBLISHED" || blog.status === "REVISION_DRAFT") {
+        canArchive = true;
+      } else if (blog.status === "UNDER_REVIEW") {
+        archiveHint = "Cannot archive an article while actively under review";
+      } else if (blog.status === "REJECT") {
+        archiveHint = "Cannot archive rejected article directly";
+      } else if (blog.status === "ARCHIVED") {
+        archiveHint = "Article is already archived";
+      }
+
+      const arcBtn = document.createElement("button");
+      arcBtn.className = "btn-action-snappy btn-danger-action";
+      arcBtn.innerHTML = "<span>[ ✕ ARCHIVE ]</span>";
+      arcBtn.setAttribute("aria-label", "Archive \"" + blog.title + "\"");
+      if (!canArchive) {
+        arcBtn.disabled = true;
+        arcBtn.setAttribute("data-tooltip", archiveHint);
+      } else {
+        arcBtn.setAttribute("data-tooltip", "Archive article");
+        arcBtn.addEventListener("click", () => runArchive(blog));
+      }
+      container.appendChild(arcBtn);
+    }
+
+    /**
+     * =====================================================================
+     * 7. PROFILE ACTIONS (Follow & Subscribe Mail Coupons with Stamp Effect)
+     * =====================================================================
+     */
+    function toggleFollowCoupon() {
+      STATE.isFollowing = !STATE.isFollowing;
+      const btn = document.getElementById("followCouponBtn");
+      if (btn) {
+        if (STATE.isFollowing) {
+          btn.classList.add("active");
+          btn.innerHTML = "<span>[ ✔ FOLLOWING ]</span>";
+          showToast("Aarav Sharma added to your personal campus dispatch feed!", "success");
+        } else {
+          btn.classList.remove("active");
+          btn.innerHTML = "<span>[ ✂ FOLLOW AUTHOR ]</span>";
+          showToast("Unfollowed author.", "info");
+        }
+      }
+    }
+
+    function toggleSubscribeCoupon() {
+      STATE.isSubscribed = !STATE.isSubscribed;
+      const btn = document.getElementById("subscribeCouponBtn");
+      if (btn) {
+        if (STATE.isSubscribed) {
+          btn.classList.add("active");
+          btn.innerHTML = "<span>[ ✔ SUBSCRIBED — INK STAMPED ]</span>";
+          showToast("Subscribed! Future technical broadsheets will arrive at your desk.", "success");
+        } else {
+          btn.classList.remove("active");
+          btn.innerHTML = "<span>[ ✂ SUBSCRIBE — 100% FREE ]</span>";
+          showToast("Subscription cancelled.", "info");
+        }
+      }
+    }
+
+    /**
+     * =====================================================================
+     * 8. ACTION HANDLERS
+     * =====================================================================
+     */
+    async function runPublish(blog) {
+      if (STATE.inProgressIds.has(blog.id)) return;
+      STATE.inProgressIds.add(blog.id);
+      reRenderSingleRow(blog.id);
+
+      try {
+        const updated = await apiRequest("PATCH", "/blogs/" + encodeURIComponent(blog.id) + "/publish");
+        showToast("Dispatch published to live broadsheet gazette!", "success");
+        mutateBlog(updated);
+      } catch (err) {
+        showToast(err.message || "Failed to publish article", "error");
+      } finally {
+        STATE.inProgressIds.delete(blog.id);
+        reRenderSingleRow(blog.id);
+      }
+    }
+
+    async function runArchive(blog) {
+      if (STATE.inProgressIds.has(blog.id)) return;
+      const confirmed = window.confirm("Archive \"" + blog.title + "\"?\n\nNote: This will move the article to view-only mode.");
+      if (!confirmed) return;
+
+      STATE.inProgressIds.add(blog.id);
+      reRenderSingleRow(blog.id);
+
+      try {
+        const updated = await apiRequest("PATCH", "/blogs/" + encodeURIComponent(blog.id) + "/archive");
+        showToast("Article successfully archived.", "info");
+        mutateBlog(updated);
+      } catch (err) {
+        showToast(err.message || "Failed to archive article", "error");
+      } finally {
+        STATE.inProgressIds.delete(blog.id);
+        reRenderSingleRow(blog.id);
+      }
+    }
+
+    function mutateBlog(updatedBlog) {
+      const idx = STATE.blogs.findIndex(b => b.id === updatedBlog.id);
+      if (idx !== -1) {
+        STATE.blogs[idx] = Object.assign({}, STATE.blogs[idx], updatedBlog);
+        updateTabCounters();
+        updateInsightsStats();
+        applyFiltersAndRender();
+      }
+    }
+
+    function reRenderSingleRow(blogId) {
+      const row = document.getElementById("story-row-" + blogId);
+      if (!row) return;
+      const blog = STATE.blogs.find(b => b.id === blogId);
+      if (!blog) return;
+      const cluster = row.querySelector("#actions-zone-" + blogId);
+      if (cluster) renderRowActions(cluster, blog);
+    }
+
+    function openStoryPreviewById(id) {
+      const blog = STATE.blogs.find(b => b.id === id);
+      if (blog) openStoryPreview(blog);
+    }
+
+    async function openStoryPreview(blog) {
+      const modal = document.getElementById("readerModalOverlay");
+      const title = document.getElementById("modalStoryTitle");
+      const body = document.getElementById("modalStoryBody");
+      const liveLink = document.getElementById("modalOpenLiveBtn");
+
+      if (!modal) return;
+
+      title.textContent = "BROADSHEET PROOF · " + blog.title.toUpperCase();
+      liveLink.href = "/blogs/" + encodeURIComponent(blog.slug);
+      body.innerHTML = `
+        <div style="padding: 1rem 0;">
+          <div class="skeleton-bar-line" style="height: 20px; width: 70%; margin-bottom: 12px;"></div>
+          <div class="skeleton-bar-line" style="height: 14px; width: 90%; margin-bottom: 8px;"></div>
+        </div>
+      `;
+      modal.classList.add("open");
+
+      try {
+        const contentData = await apiRequest("GET", "/blogs/" + encodeURIComponent(blog.id) + "/content");
+        let textSummary = "Draft content text.";
+        if (contentData && contentData.content) {
+          textSummary = parseTipTap(contentData.content) || "No content recorded.";
+        }
+
+        const thumbImg = blog.thumbnail
+          ? `<div style="width: 100%; height: 230px; border: 3px solid var(--border-black); position: relative; overflow: hidden; margin-bottom: 1.25rem;">
+               <img src="` + escapeHtml(blog.thumbnail) + `" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="` + escapeHtml(blog.title) + `" />
+             </div>`
+          : "";
+
+        body.innerHTML = `
+          ` + thumbImg + `
+          <div style="margin-bottom: 1.25rem; border-bottom: 2px solid var(--border-black); padding-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">
+              <span class="snappy-status-pill ` + (blog.status || "").toLowerCase() + `">` + escapeHtml(formatStatusTitle(blog.status)) + `</span>
+              <span>` + escapeHtml(blog.category || "General") + ` · REV v` + (contentData.version || 1) + `</span>
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; line-height: 1.05; text-transform: uppercase; margin-bottom: 0.65rem;">
+              ` + escapeHtml(blog.title) + `
+            </h2>
+            <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted); display: flex; gap: 1.25rem; text-transform: uppercase;">
+              <span>AUTHOR: AARAV SHARMA</span>
+              <span>STATUS: ` + escapeHtml(formatStatusTitle(blog.status)).toUpperCase() + `</span>
+            </div>
+          </div>
+
+          <div style="font-family: var(--font-body); font-size: 1.02rem; line-height: 1.34; color: var(--text-body); white-space: pre-line;">
+            ` + escapeHtml(textSummary) + `
+          </div>
+        `;
+      } catch (err) {
+        body.innerHTML = `<p style="font-family: var(--font-mono); font-size: 0.88rem;">Preview unavailable: ` + escapeHtml(err.message) + `</p>`;
+      }
+    }
+
+    function parseTipTap(node) {
+      if (!node) return "";
+      if (typeof node.text === "string") return node.text;
+      if (Array.isArray(node.content)) return node.content.map(parseTipTap).join(" ");
+      return "";
+    }
+
+    
+    function openProfileModal() {
+      const modal = document.getElementById("profileModalOverlay");
+      if (!modal) return;
+      const p = STATE.profile || {};
+      document.getElementById("editProfName").value = p.name || "";
+      document.getElementById("editProfUsername").value = (p.username || "").replace(/^@/, "");
+      document.getElementById("editProfAvatar").value = p.profileImg || "";
+      document.getElementById("editProfBio").value = p.bio || "";
+      modal.classList.add("open");
+    }
+
+    function closeProfileModal() {
+      const modal = document.getElementById("profileModalOverlay");
+      if (modal) modal.classList.remove("open");
+    }
+
+    async function saveUserProfile(e) {
+      e.preventDefault();
+      const name = document.getElementById("editProfName").value.trim();
+      const username = document.getElementById("editProfUsername").value.trim().replace(/^@/, "");
+      const profileImg = document.getElementById("editProfAvatar").value.trim();
+      const bio = document.getElementById("editProfBio").value.trim();
+
+      const updated = Object.assign({}, STATE.profile, {
+        name: name || STATE.profile.name,
+        username: username || STATE.profile.username,
+        profileImg: profileImg || STATE.profile.profileImg,
+        bio: bio || STATE.profile.bio
+      });
+
+      STATE.profile = updated;
+      try {
+        localStorage.setItem("aces_user_profile", JSON.stringify(updated));
+      } catch (err) {}
+
+      try {
+        await apiRequest("PUT", "/users/" + encodeURIComponent(CONFIG.CURRENT_USER.id), updated);
+      } catch (err) {}
+
+      renderProfile();
+      closeProfileModal();
+      showToast("Author credentials updated and saved to desk!", "success");
+    }
+
+    function openEditorialBadgeModal() {
+      const modal = document.getElementById("editorialBadgeModalOverlay");
+      if (modal) modal.classList.add("open");
+    }
+
+    function closeEditorialBadgeModal() {
+      const modal = document.getElementById("editorialBadgeModalOverlay");
+      if (modal) modal.classList.remove("open");
+    }
+
+    function onBadgePresetChange(val) {
+      const customGroup = document.getElementById("customBadgeGroup");
+      if (customGroup) {
+        customGroup.style.display = val === "CUSTOM" ? "block" : "none";
+      }
+    }
+
+    async function awardEditorialBadge(e) {
+      e.preventDefault();
+      const preset = document.getElementById("badgeSelectPreset").value;
+      const customName = document.getElementById("txtCustomBadgeName") ? document.getElementById("txtCustomBadgeName").value.trim() : "";
+      const awardedBy = document.getElementById("txtAwardedBy").value.trim() || "ACES Editorial Board";
+      const style = document.getElementById("selBadgeStyle").value;
+
+      let badgeText = preset;
+      let badgeEmoji = "★";
+
+      if (preset === "CUSTOM") {
+        badgeText = customName || "FELLOW CONTRIBUTOR";
+        badgeEmoji = "★";
+      } else if (preset.includes("⚡")) {
+        badgeEmoji = "⚡";
+      } else if (preset.includes("🏆")) {
+        badgeEmoji = "🏆";
+      } else if (preset.includes("🎖️")) {
+        badgeEmoji = "🎖️";
+      }
+
+      const newBadge = {
+        key: "editorial-" + Date.now(),
+        text: badgeText,
+        emoji: badgeEmoji,
+        awarded: style === "solid",
+        awardedBy: awardedBy,
+        awardedAt: new Date().toISOString()
+      };
+
+      if (!STATE.profile.labels) STATE.profile.labels = [];
+      STATE.profile.labels.push(newBadge);
+
+      try {
+        localStorage.setItem("aces_user_profile", JSON.stringify(STATE.profile));
+      } catch (err) {}
+
+      try {
+        await apiRequest("POST", "/users/" + encodeURIComponent(CONFIG.CURRENT_USER.id) + "/badges", newBadge);
+      } catch (err) {}
+
+      renderProfile();
+      closeEditorialBadgeModal();
+      showToast("Official accolade accredited by " + awardedBy + "!", "success");
+    }
+
+    function openComposerModal() {
+      const modal = document.getElementById("composerModalOverlay");
+      if (modal) modal.classList.add("open");
+    }
+
+    function closeComposerModal() {
+      const modal = document.getElementById("composerModalOverlay");
+      if (modal) modal.classList.remove("open");
+    }
+
+    function submitNewDraft(e) {
+      e.preventDefault();
+      const title = document.getElementById("inpTitle").value.trim();
+      const category = document.getElementById("selCategory").value;
+      const intro = document.getElementById("txtIntro").value.trim();
+
+      if (!title) return;
+
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+      const newBlog = {
+        id: "draft-" + Date.now(),
+        slug: slug || "untitled-draft",
+        title: title,
+        thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80",
+        author: CONFIG.CURRENT_USER.id,
+        reviewer: null,
+        status: "DRAFT",
+        category: category,
+        tags: [category.toLowerCase().replace(/[^a-z]+/g, "-")],
+        readsCount: 0,
+        readTime: "4 min read",
+        rejectionReason: null,
+        latestRevisionVersion: 1,
+        latestPublishedVersion: 0,
+        createdAt: new Date().toISOString(),
+        modifiedAt: new Date().toISOString()
+      };
+
+      MOCK.blogs.unshift(newBlog);
+      STATE.blogs.unshift(newBlog);
+
+      closeComposerModal();
+      document.getElementById("composerStoryForm").reset();
+
+      updateTabCounters();
+      updateInsightsStats();
+      applyFiltersAndRender();
+
+      showToast("Draft \"" + title + "\" created successfully!", "success");
+    }
+
+    /**
+     * =====================================================================
+     * 9. UTILITIES & THEME ENGINE
+     * =====================================================================
+     */
+    function showToast(message, type = "info") {
+      const rack = document.getElementById("toastContainer");
+      if (!rack) return;
+
+      const toast = document.createElement("div");
+      toast.className = "snappy-toast";
+      toast.setAttribute("role", "alert");
+
+      let icon = "✔";
+      if (type === "error") icon = "✕";
+      if (type === "info") icon = "☛";
+
+      toast.innerHTML = `
+        <span style="font-weight: 900; font-size: 1rem;">[ ` + icon + ` ]</span>
+        <span style="flex: 1;">` + escapeHtml(message) + `</span>
+      `;
+
+      rack.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-4px)";
+        setTimeout(() => toast.remove(), 200);
+      }, 3600);
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getMonogram(name) {
+      if (!name) return "W";
+      const words = name.trim().split(/\s+/);
+      if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+      return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    }
+
+    function formatStatusTitle(st) {
+      switch (st) {
+        case "PUBLISHED": return "Published";
+        case "UNDER_REVIEW": return "In Review";
+        case "DRAFT": return "Draft";
+        case "REVISION_DRAFT": return "Revision";
+        case "REJECT": return "Needs Changes";
+        case "ARCHIVED": return "Archived";
+        default: return st || "Draft";
+      }
+    }
+
+    function formatRelativeTime(iso) {
+      if (!iso) return "recently";
+      const deltaSec = Math.floor((new Date() - new Date(iso)) / 1000);
+      if (deltaSec < 60) return "just now";
+      const m = Math.floor(deltaSec / 60);
+      if (m < 60) return m + "m ago";
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + "h ago";
+      const d = Math.floor(h / 24);
+      if (d === 1) return "yesterday";
+      if (d < 30) return d + "d ago";
+      return Math.floor(d / 30) + "mo ago";
+    }
+
+    function toggleTheme() {
+      const next = STATE.theme === "dark" ? "light" : "dark";
+      applyTheme(next);
+    }
+
+    function applyTheme(theme) {
+      STATE.theme = theme;
+      try {
+        localStorage.setItem("aces_theme", theme);
+      } catch (err) {}
+      document.documentElement.setAttribute("data-theme", theme);
+      const label = document.getElementById("themeToggleLabel");
+      if (label) {
+        label.textContent = theme === "dark" ? "✦ LIGHT" : "✦ DARK";
+      }
+    }
+
+    /**
+     * =====================================================================
+     * 10. DOM BOOTSTRAP
+     * =====================================================================
+     */
+    document.addEventListener("DOMContentLoaded", () => {
+      let initialTheme = "light";
+      try {
+        const saved = localStorage.getItem("aces_theme");
+        if (saved === "light" || saved === "dark") initialTheme = saved;
+      } catch (err) {}
+      applyTheme(initialTheme);
+
+      const themeBtn = document.getElementById("themeToggleBtn");
+      if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+
+      if (CONFIG.USE_MOCK) {
+        const pill = document.getElementById("mockStatusPill");
+        if (pill) pill.style.display = "inline-flex";
+      }
+
+      const topWriteBtn = document.getElementById("openComposerTopBtn");
+      const quickDraftBtn = document.getElementById("quickCreateDraftBtn");
+      if (topWriteBtn) topWriteBtn.addEventListener("click", openComposerModal);
+      if (quickDraftBtn) quickDraftBtn.addEventListener("click", openComposerModal);
+
+      const closeCompBtn = document.getElementById("closeComposerModalBtn");
+      if (closeCompBtn) closeCompBtn.addEventListener("click", closeComposerModal);
+
+      const bioBtn = document.getElementById("bioExpandBtn");
+      const bioText = document.getElementById("bioContentSpan");
+      if (bioBtn && bioText) {
+        bioBtn.addEventListener("click", () => {
+          STATE.bioExpanded = !STATE.bioExpanded;
+          if (STATE.bioExpanded) {
+            bioText.classList.remove("clamped");
+            bioBtn.textContent = "Read less ☚";
+            bioBtn.setAttribute("aria-expanded", "true");
+          } else {
+            bioText.classList.add("clamped");
+            bioBtn.textContent = "Read more ➔";
+            bioBtn.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+
+      const tabs = document.querySelectorAll(".seg-tab-btn");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.setAttribute("aria-selected", "false"));
+          tab.setAttribute("aria-selected", "true");
+          STATE.activeFilter = tab.getAttribute("data-filter");
+          applyFiltersAndRender();
+        });
+      });
+
+      const topSearch = document.getElementById("topNavSearch");
+      const inlineSearch = document.getElementById("inlineSearchInput");
+
+      function syncSearch(val) {
+        STATE.searchQuery = val;
+        if (topSearch && topSearch.value !== val) topSearch.value = val;
+        if (inlineSearch && inlineSearch.value !== val) inlineSearch.value = val;
+        applyFiltersAndRender();
+      }
+
+      if (topSearch) topSearch.addEventListener("input", e => syncSearch(e.target.value));
+      if (inlineSearch) inlineSearch.addEventListener("input", e => syncSearch(e.target.value));
+
+      window.addEventListener("keydown", e => {
+        if (e.key === "/" && document.activeElement !== topSearch && document.activeElement !== inlineSearch) {
+          e.preventDefault();
+          if (inlineSearch) inlineSearch.focus();
+          else if (topSearch) topSearch.focus();
+        }
+      });
+
+      const sortSelect = document.getElementById("sortSelector");
+      if (sortSelect) {
+        sortSelect.addEventListener("change", e => {
+          STATE.sortKey = e.target.value;
+          applyFiltersAndRender();
+        });
+      }
+
+      const readerModal = document.getElementById("readerModalOverlay");
+      const closeReaderBtn = document.getElementById("closeReaderModalBtn");
+      if (readerModal && closeReaderBtn) {
+        closeReaderBtn.addEventListener("click", () => readerModal.classList.remove("open"));
+        readerModal.addEventListener("click", e => {
+          if (e.target === readerModal) readerModal.classList.remove("open");
+        });
+      }
+
+      const compModal = document.getElementById("composerModalOverlay");
+      if (compModal) {
+        compModal.addEventListener("click", e => {
+          if (e.target === compModal) closeComposerModal();
+        });
+      }
+
+      window.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+          if (readerModal && readerModal.classList.contains("open")) readerModal.classList.remove("open");
+          if (compModal && compModal.classList.contains("open")) closeComposerModal();
+        }
+      });
+
+      loadProfile();
+      loadBlogs();
+    });
+  </script>
+
+  <!-- Profile Editor Modal (User Credentials Popup - Hidden by default) -->
+  <div id="profileModalOverlay" class="snappy-modal-overlay" onclick="if(event.target===this)closeProfileModal()">
+    <div class="snappy-modal-pane" style="max-width: 580px;">
+      <div class="snappy-modal-head">
+        <span class="snappy-modal-title">AUTHOR PROFILE CREDENTIALS DESK</span>
+        <button type="button" class="btn-close-modal" onclick="closeProfileModal()">[ ✕ ]</button>
+      </div>
+
+      <div class="snappy-modal-content">
+        <form id="profileEditForm" onsubmit="saveUserProfile(event)">
+          <div class="form-field-group">
+            <label class="form-field-label" for="editProfName">Full Author Name</label>
+            <input type="text" id="editProfName" class="form-text-input" required />
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="editProfUsername">Handle / Author Slug</label>
+            <input type="text" id="editProfUsername" class="form-text-input" required />
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="editProfAvatar">Profile Photo URL (Taken from User)</label>
+            <input type="url" id="editProfAvatar" class="form-text-input" placeholder="https://images.unsplash.com/..." required />
+            <div id="editProfAvatarPreview" style="margin-top: 0.5rem; width: 64px; height: 64px; border: 2px solid var(--border-black); overflow: hidden; display: none;">
+              <img id="editProfAvatarPreviewImg" src="" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-field-label" for="editProfBio">Author Biography & Investigative Beat</label>
+            <textarea id="editProfBio" class="form-textarea-box" rows="4" required></textarea>
+          </div>
+
+          <div class="snappy-modal-foot" style="padding: 1rem 0 0 0; background: none; border: none; display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-action-snappy" onclick="closeProfileModal()">[ ✕ CANCEL ]</button>
+            <button type="submit" class="btn-primary-write">✔ UPDATE CREDENTIALS</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

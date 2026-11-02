@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="ACES Blog - Editorial Board Accreditation & Official Honors Registry." />
+  <title>ACES Editorial Board · Accreditations & Honors Registry | Blog Aces</title>
+
+  <!-- High-End Broadsheet Typography: Anton + Merriweather + Courier Prime -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =====================================================================
+       1. OLD MONEY BROADSHEET DESIGN TOKENS
+       ===================================================================== */
+    :root {
+      --font-heading: 'Anton', Impact, 'Arial Black', sans-serif;
+      --font-body: 'Merriweather', 'PT Serif', Georgia, serif;
+      --font-mono: 'Courier Prime', 'Courier New', Courier, monospace;
+
+      /* Stark Paper & Ink Palette - Pure White & Solid Black Only */
+      --bg-canvas: #ffffff;
+      --bg-card: #ffffff;
+      --bg-muted: #ffffff;
+      --border-black: #000000;
+      --text-main: #000000;
+      --text-body: #000000;
+      --text-muted: #333333;
+      --shadow-modal: 8px 8px 0px #000000;
+    }
+
+    [data-theme="dark"] {
+      --bg-canvas: #000000;
+      --bg-card: #000000;
+      --bg-muted: #000000;
+      --border-black: #ffffff;
+      --text-main: #ffffff;
+      --text-body: #ffffff;
+      --text-muted: #cccccc;
+      --shadow-modal: 8px 8px 0px #ffffff;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    html, body {
+      background-color: var(--bg-canvas);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.35;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Masthead */
+    .broadsheet-masthead {
+      border-bottom: 4px double var(--border-black);
+      padding: 1.25rem 2rem 1rem;
+      text-align: center;
+      background: var(--bg-card);
+    }
+
+    .kicker-line {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text-muted);
+    }
+
+    .masthead-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      letter-spacing: 0.05em;
+      line-height: 0.95;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .masthead-tagline {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* Top Navigation Bar */
+    .topbar {
+      border-bottom: 2px solid var(--border-black);
+      padding: 0.65rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar-badge {
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.76rem;
+      border: 2px solid var(--border-black);
+      padding: 0.25rem 0.65rem;
+      background: var(--text-main);
+      color: var(--bg-card);
+      letter-spacing: 0.08em;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Buttons */
+    .btn-snappy {
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.45rem 0.9rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 2px solid var(--border-black);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: none;
+    }
+
+    .btn-snappy:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    .btn-primary {
+      background: var(--text-main);
+      color: var(--bg-card);
+      border: 2px solid var(--border-black);
+    }
+
+    .btn-primary:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    /* Page Container */
+    .page-container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      flex: 1;
+    }
+
+    /* Two Column Broadsheet Grid */
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .editorial-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      border: 3px solid var(--border-black);
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-head {
+      background: var(--border-black);
+      color: var(--bg-card);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .panel-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Forms */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .field-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-main);
+    }
+
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      border: 2px solid var(--border-black);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      padding: 0.65rem 0.8rem;
+    }
+
+    .field-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* Registry Table */
+    .registry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .registry-table th {
+      border-bottom: 2px solid var(--border-black);
+      padding: 0.65rem 0.5rem;
+      text-align: left;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .registry-table td {
+      border-bottom: 1px solid var(--border-black);
+      padding: 0.75rem 0.5rem;
+      vertical-align: middle;
+    }
+
+    .badge-pill-solid {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      background: var(--text-main);
+      color: var(--bg-card);
+      padding: 0.2rem 0.55rem;
+      border: 1px solid var(--border-black);
+    }
+
+    .badge-pill-outline {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      background: var(--bg-card);
+      color: var(--text-main);
+      padding: 0.2rem 0.55rem;
+      border: 2px solid var(--border-black);
+    }
+
+    .btn-revoke {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px dashed var(--border-black);
+      cursor: pointer;
+    }
+
+    .btn-revoke:hover {
+      background: var(--text-main);
+      color: var(--bg-card);
+    }
+
+    /* Notice box */
+    .notice-box {
+      border: 1px dashed var(--border-black);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.4;
+      background: var(--bg-muted);
+    }
+
+    /* Toast */
+    #editorialToast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.85rem 1.5rem;
+      background: var(--text-main);
+      color: var(--bg-card);
+      border: 2px solid var(--border-black);
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.85rem;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Masthead -->
+  <header class="broadsheet-masthead">
+    <div class="kicker-line">THE OFFICIAL ACADEMIC TECHNICAL CHRONICLE · DEPARTMENT OF COMPUTER ENGINEERING</div>
+    <h1 class="masthead-title">ACES EDITORIAL BOARD</h1>
+    <div class="masthead-tagline">※ OFFICIAL ACCREDITATION & HONORS DESK ※</div>
+  </header>
+
+  <!-- Top Navigation -->
+  <nav class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-badge">⚖ EDITORIAL DESK ACTIVE</span>
+      <span style="font-family: var(--font-mono); font-size: 0.78rem;">FACULTY PEER REGISTRY</span>
+    </div>
+
+    <div class="topbar-right">
+      <a href="/writer-profile.html" class="btn-snappy" title="Return to writer desk">
+        <span>➔ WRITER DESK</span>
+      </a>
+      <a href="/editor" class="btn-snappy" title="Open blog editor">
+        <span>➔ WRITE BLOG</span>
+      </a>
+      <button id="themeToggleBtn" class="btn-snappy" onclick="toggleTheme()" title="Toggle contrast">
+        <span id="themeToggleLabel">✦ DARK</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <main class="page-container">
+    <div class="editorial-grid">
+
+      <!-- LEFT: Accredit Form -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <span class="panel-title">✦ ISSUE OFFICIAL ACCREDITATION</span>
+          <span style="font-family: var(--font-mono); font-size: 0.75rem;">FORM 104-E</span>
+        </div>
+
+        <div class="panel-body">
+          <p style="font-size: 0.9rem; line-height: 1.4; color: var(--text-muted);">
+            Official labels are accredited exclusively by the ACES Faculty & Editorial Committee to recognize investigative depth, systems research, and campus contribution.
+          </p>
+
+          <form id="accreditForm" onsubmit="handleAccredit(event)">
+            <!-- Select Author -->
+            <div class="field-group">
+              <label class="field-label" for="selAuthor">Target Author / Candidate</label>
+              <select id="selAuthor" class="field-select" onchange="onAuthorChange(this.value)">
+                <option value="user-1" selected>Aarav Sharma (@aarav_writes) · Systems Fellow [user-1]</option>
+                <option value="user-2">Priya Patel (@priya_systems) · Research Lead [user-2]</option>
+              </select>
+            </div>
+
+            <!-- Accolade Preset -->
+            <div class="field-group">
+              <label class="field-label" for="selPreset">Select Official Accolade</label>
+              <select id="selPreset" class="field-select" onchange="onPresetChange(this.value)">
+                <option value="★ TOP CONTRIBUTOR '25">★ TOP CONTRIBUTOR '25 (Peer Leader)</option>
+                <option value="⚡ SYSTEMS LEAD">⚡ SYSTEMS LEAD (Kernel Specialist)</option>
+                <option value="🏆 EDITORIAL CHOICE '25">🏆 EDITORIAL CHOICE '25 (Flagship Dispatch)</option>
+                <option value="🎖️ RESEARCH FELLOW">🎖️ RESEARCH FELLOW (Faculty Commended)</option>
+                <option value="CUSTOM">Custom Editorial Accolade...</option>
+              </select>
+            </div>
+
+            <!-- Custom Accolade Title -->
+            <div class="field-group" id="customFieldGroup" style="display: none;">
+              <label class="field-label" for="txtCustomTitle">Custom Accolade Title</label>
+              <input type="text" id="txtCustomTitle" class="field-input" placeholder="e.g. DISTRIBUTED SYSTEMS ARCHITECT" />
+            </div>
+
+            <!-- Awarding Body -->
+            <div class="field-group">
+              <label class="field-label" for="txtAwardingBody">Awarding Editorial Body</label>
+              <input type="text" id="txtAwardingBody" class="field-input" value="ACES PVGCOET Editorial Board" required />
+            </div>
+
+            <!-- Ink Treatment -->
+            <div class="field-group">
+              <label class="field-label" for="selInkTreatment">Badge Ink Treatment</label>
+              <select id="selInkTreatment" class="field-select">
+                <option value="solid">Solid Black Frame (Primary Recognition)</option>
+                <option value="outline">Crisp Paper Outline (Specialist Track)</option>
+              </select>
+            </div>
+
+            <!-- Citation Note -->
+            <div class="field-group">
+              <label class="field-label" for="txtCitation">Editorial Citation / Research Beat</label>
+              <textarea id="txtCitation" class="field-textarea" placeholder="Commended for investigative depth in distributed consensus and memory safety telemetry."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+              <button type="submit" class="btn-snappy btn-primary" style="padding: 0.65rem 1.4rem;">
+                ★ ACCREDIT & AWARD BADGE
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- RIGHT: Active Ledger -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <span class="panel-title">⚖ ACTIVE ACCREDITATIONS REGISTRY</span>
+          <span id="activeCountBadge" style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 900;">0 ACTIVE</span>
+        </div>
+
+        <div class="panel-body">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-black); padding-bottom: 0.5rem;">
+            <span style="font-family: var(--font-mono); font-size: 0.76rem; font-weight: 800; text-transform: uppercase;">
+              CURRENT RECIPIENT: <strong id="lblTargetAuthorName">Aarav Sharma</strong>
+            </span>
+            <button class="btn-snappy" onclick="reloadLedger()" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;">
+              ↻ REFRESH
+            </button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="registry-table">
+              <thead>
+                <tr>
+                  <th>ACCOLADE</th>
+                  <th>AWARDED BY</th>
+                  <th>DATE</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="notice-box">
+            <strong>OFFICIAL ACES EDITORIAL POLICY:</strong><br />
+            Accreditations issued from this desk appear directly on the author's public credentials pass and blog mastheads across the ACES network. Only designated editorial fellows may grant or revoke these honors.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="editorialToast"></div>
+
+  <script>
+    const DEFAULT_BADGES = {
+      "user-1": [
+        { id: "b1", text: "★ TOP CONTRIBUTOR '25", emoji: "★", awardedBy: "ACES Editorial Board", awardedAt: "2026-10-15", style: "solid" },
+        { id: "b2", text: "⚡ SYSTEMS LEAD", emoji: "⚡", awardedBy: "ACES PVGCOET Editorial Board", awardedAt: "2026-10-20", style: "solid" }
+      ],
+      "user-2": [
+        { id: "b3", text: "🎖️ RESEARCH FELLOW", emoji: "🎖️", awardedBy: "ACES Editorial Board", awardedAt: "2026-10-10", style: "outline" }
+      ]
+    };
+
+    let CURRENT_AUTHOR = "user-1";
+
+    function getStorageBadges(userId) {
+      try {
+        const raw = localStorage.getItem("aces_badges_" + userId);
+        if (raw) return JSON.parse(raw);
+      } catch(e){}
+      return DEFAULT_BADGES[userId] || [];
+    }
+
+    function saveStorageBadges(userId, badges) {
+      try {
+        localStorage.setItem("aces_badges_" + userId, JSON.stringify(badges));
+        if (userId === "user-1") {
+          localStorage.setItem("aces_user_badges", JSON.stringify(badges));
+        }
+      } catch(e){}
+    }
+
+    function onPresetChange(val) {
+      const customGroup = document.getElementById("customFieldGroup");
+      customGroup.style.display = val === "CUSTOM" ? "block" : "none";
+    }
+
+    function onAuthorChange(val) {
+      CURRENT_AUTHOR = val;
+      const authorNames = {
+        "user-1": "Aarav Sharma (@aarav_writes)",
+        "user-2": "Priya Patel (@priya_systems)"
+      };
+      document.getElementById("lblTargetAuthorName").textContent = authorNames[val] || val;
+      renderLedger();
+    }
+
+    function renderLedger() {
+      const badges = getStorageBadges(CURRENT_AUTHOR);
+      const tbody = document.getElementById("ledgerTableBody");
+      const countEl = document.getElementById("activeCountBadge");
+      tbody.innerHTML = "";
+      countEl.textContent = badges.length + " ACTIVE";
+
+      if (badges.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = '<td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">No official accreditations active for this author.</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+
+      badges.forEach(b => {
+        const tr = document.createElement("tr");
+        const pillClass = b.style === "outline" ? "badge-pill-outline" : "badge-pill-solid";
+        tr.innerHTML = `
+          <td><span class="${pillClass}">${escapeHtml(b.text)}</span></td>
+          <td>${escapeHtml(b.awardedBy || "ACES Editorial Board")}</td>
+          <td>${escapeHtml(b.awardedAt || "2026-10-31")}</td>
+          <td><button class="btn-revoke" onclick="revokeBadge('${b.id}')">[ ✂ REVOKE ]</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function handleAccredit(e) {
+      e.preventDefault();
+      const preset = document.getElementById("selPreset").value;
+      const customTitle = document.getElementById("txtCustomTitle").value.trim();
+      const title = preset === "CUSTOM" ? customTitle : preset;
+
+      if (!title) {
+        showToast("Please provide an accolade title.", "error");
+        return;
+      }
+
+      const awardedBy = document.getElementById("txtAwardingBody").value.trim() || "ACES PVGCOET Editorial Board";
+      const style = document.getElementById("selInkTreatment").value;
+
+      const newBadge = {
+        id: "badge-" + Date.now(),
+        text: title,
+        emoji: title.charAt(0) || "★",
+        awardedBy,
+        awardedAt: new Date().toISOString().split('T')[0],
+        style
+      };
+
+      const current = getStorageBadges(CURRENT_AUTHOR);
+      current.push(newBadge);
+      saveStorageBadges(CURRENT_AUTHOR, current);
+
+      // Call API
+      try {
+        await fetch("/api/profile/" + encodeURIComponent(CURRENT_AUTHOR) + "/badges", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: title, awardedBy, style })
+        });
+      } catch(err){}
+
+      renderLedger();
+      showToast("Accreditation '" + title + "' successfully awarded!", "success");
+      if (preset === "CUSTOM") document.getElementById("txtCustomTitle").value = "";
+    }
+
+    async function revokeBadge(badgeId) {
+      if (!confirm("Revoke this official accreditation?")) return;
+      let current = getStorageBadges(CURRENT_AUTHOR);
+      current = current.filter(b => b.id !== badgeId);
+      saveStorageBadges(CURRENT_AUTHOR, current);
+
+      try {
+        await fetch("/api/profile/" + encodeURIComponent(CURRENT_AUTHOR) + "/badges?badgeId=" + encodeURIComponent(badgeId), {
+          method: "DELETE"
+        });
+      } catch(err){}
+
+      renderLedger();
+      showToast("Accreditation revoked from author registry.", "info");
+    }
+
+    function reloadLedger() {
+      renderLedger();
+      showToast("Ledger refreshed from registry.", "info");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("editorialToast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Theme Management
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      const label = document.getElementById("themeToggleLabel");
+      if (label) label.textContent = theme === "dark" ? "✦ LIGHT" : "✦ DARK";
+      try { localStorage.setItem("aces_theme", theme); } catch(e){}
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      applyTheme(current === "dark" ? "light" : "dark");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("aces_theme") || "light";
+      applyTheme(savedTheme);
+      renderLedger();
+    });
+  </script>
+</body>
+</html>

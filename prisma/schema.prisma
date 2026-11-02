@@ -1,0 +1,75 @@
+// This is your Prisma schema file.
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+//
+// Maps directly to the TypeScript interfaces in lib/types.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum EmblemVariant {
+  default
+  decorated
+}
+
+// ---------- Models ----------
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  school     String
+  city       String
+  age        Int
+  hometown   String
+  companion  String
+  lastAccess DateTime @default(now())
+  rankTitle  String
+  avatarUrl  String?
+  bannerUrl  String   @default("/images/banner-placeholder.jpg")
+
+  // Relations
+  badges     Badge[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Badge {
+  id       String   @id @default(cuid())
+  name     String
+  iconUrl  String?
+  earnedAt DateTime @default(now())
+
+  // Relation back to User
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("badges")
+}
+
+model Team {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  points        Int           @default(0)
+  streakDays    Int           @default(0)
+  emblemVariant EmblemVariant @default(default)
+  rank          Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
