@@ -1,4 +1,4 @@
-# ACES Broadsheet Gazette & Editorial Platform — Project Summary
+# ACES Broadsheet Gazette Platform — Project Summary
 
 > **The Official Academic Technical Chronicle & Editorial Publishing Platform**  
 > *Department of Computer Engineering · ACES PVGCOET*  
@@ -8,19 +8,20 @@
 
 ## 1. Executive Overview
 
-The **ACES Broadsheet Gazette** (`blog_front_prof_pg`) is a full-stack academic publishing platform and creator workbench designed for engineering students, faculty, and technical researchers. Built on **Next.js 16 (App Router + Turbopack)**, **TypeScript**, and **Prisma ORM (PostgreSQL)**, the application rejects generic modern SaaS design in favor of a timeless, high-contrast **"Old-Money Academic Broadsheet"** broadsheet aesthetic.
+The **ACES Broadsheet Gazette** (`blog_front_prof_pg`) is a focused academic publishing platform and creator workbench designed for engineering students, faculty, and technical researchers. Built on **Next.js 16 (App Router + Turbopack)**, **TypeScript**, and **Prisma ORM (PostgreSQL)**, the application enforces an authentic, high-contrast **"Old-Money Academic Broadsheet"** aesthetic across both Light and Dark proofs.
 
-The platform provides an end-to-end editorial ecosystem:
-1. **Writers** can manage their technical dispatches, track readership performance, edit user credentials, and compose articles in a dedicated manuscript editor.
-2. **The Editorial Board & Faculty Committee** possess an independent accreditation registry to grant peer-reviewed honours and institutional awards.
-3. **Readers** can explore verified technical dispatches, view fellow credential passes, and follow campus team rankings.
+### Clean Ecosystem Structure
+1. **Writer Workbench (`/writer-profile.html`)**: Authors manage their published technical dispatches, track readership performance, edit fellow credentials, and trigger the dedicated editor.
+2. **Dedicated Editor Integration Hook**: The workbench maintains active integration hooks (`[ ➔ WRITE BLOG ]` and `[ ✂ EDIT ]`), structured via `EDITOR_CONFIG` to seamlessly open a separate dedicated editor page that will be added afterward.
+3. **Editorial Team Database Accreditation**: Editorial board controls are not exposed on the public frontend; instead, designated editorial team members receive direct database access to grant official accolades and nicknames, which appear directly on the author's fellow pass.
 
 ```mermaid
 flowchart LR
-    A["Author / Researcher"] -->|"Manage Bio & Dispatches"| B["Writer Desk<br/>(/writer-profile.html)"]
-    A -->|"Draft & Publish Stories"| C["Standalone Editor<br/>(/editor)"]
-    D["Editorial Committee"] -->|"Accredit Accolades & Badges"| E["Editorial Registry<br/>(/editorial-board.html)"]
-    F["Public / Campus Readers"] -->|"Explore Rankings & Bylines"| G["Public Profiles & Leaderboard<br/>(/profile/:id & /api/ranking)"]
+    Author["Author / Researcher"] -->|"Manage Profile & Stories"| Desk["Writer Desk<br/>(/writer-profile.html)"]
+    Desk -->|"[➔ WRITE BLOG] & [✂ EDIT]"| EditorHook["Dedicated Editor Route<br/>(openDedicatedEditor)"]
+    EditorHook -->|"Opens Afterward"| DedicatedEditor["Separate Dedicated Editor Page"]
+    Editorial["Editorial Committee<br/>(Direct DB / API Access)"] -->|"Assigns Badges & Nicknames"| DB["PostgreSQL Database / API"]
+    Desk -->|"Fetches & Displays Badges"| DB
 ```
 
 ---
@@ -35,15 +36,10 @@ The visual identity is modeled after classical 20th-century academic broadsheets
   * **Headings**: `Anton` (Uppercase, impactful condensed display sans).
   * **Body Copy**: `Merriweather` / `PT Serif` (Editorial serif with high legibility).
   * **Metadata & Badges**: `Courier Prime` / Monospace (Typewriter registration labels).
-* **Authentic Print Details**:
-  * Registration marks (`⊕ ✛`) on portrait stamps.
-  * Perforated coupon borders (`border: 2px dashed #000`).
-  * Scissor cut-out action labels (`[ ✂ EDIT ]`, `[ ✂ SAVE DRAFT ]`, `[ ✂ REVOKE ]`).
-  * Official seals (`★ OFFICIAL WRITER DESK`, `⚖ EDITORIAL DESK`).
 * **Dual-Proof Ink Switcher**:
   * Toggles instantly between **Light Mode** (Crisp Paper Proof) and **Dark Mode** (Inverted Letterpress Proof).
   * Button label toggles strictly between **`✦ DARK`** and **`✦ LIGHT`**.
-  * Synchronized globally across all desks via `localStorage.aces_theme`.
+  * Synchronized globally across all views via `localStorage.aces_theme`.
 
 ---
 
@@ -52,10 +48,10 @@ The visual identity is modeled after classical 20th-century academic broadsheets
 ### 3.1. Writer Profile Workbench (`/writer-profile.html`)
 The comprehensive personal command center for authors and technical fellows:
 * **Academic Press Pass (Fellow Card)**:
-  * Halftone/stamped author portrait with camera registration marks.
+  * Halftone author portrait with camera registration marks (`⊕ ✛`).
   * Verified Fellow badge and handle (`@aarav_writes`).
-  * Live biographic beat and systems specialty statement.
-  * Official accreditation cluster displaying peer-reviewed accolades.
+  * Author signature and biographic beat.
+  * **Accreditation Cluster (`#authorBadgesCluster`)**: Renders official accolades and nicknames awarded by the editorial team (e.g. `★ TOP CONTRIBUTOR '25`, `⚡ SYSTEMS LEAD`).
   * Direct action **`[ ✎ EDIT PROFILE ]`** to open the credentials popup.
 * **User Credentials Modal**:
   * Encapsulated popup dialog (`.snappy-modal-overlay`) completely hidden by default.
@@ -64,147 +60,78 @@ The comprehensive personal command center for authors and technical fellows:
 * **Dispatches & Story Stream**:
   * Tabular broadsheet stories ledger with full-bleed media thumbnails (`object-fit: cover`).
   * Metadata tags for reading time, word count, category, and publication dates.
-  * Row actions: **`[ ✂ EDIT ]`** (opens `/editor?id=...`) and **`[ 👁 READ ]`** (proofreader modal).
+  * Row actions: **`[ ✂ EDIT ]`** (triggers `openDedicatedEditor(null, story.id)`) and **`[ ☛ PREVIEW ]`** (manuscript proof).
 * **Top Navigation Bar**:
   * Quick live search (`/` shortcut).
-  * Navigation links: **`[ ⚖ EDITORIAL DESK ]`**, **`[ ✦ DARK / LIGHT ]`**, and **`[ ➔ WRITE BLOG ]`**.
+  * **`[ ✦ DARK / LIGHT ]`**: Instant theme switcher.
+  * **`[ ➔ WRITE BLOG ]`**: Triggers `openDedicatedEditor(event)`.
 
-### 3.2. Dedicated Blog Editor (`/editor`)
-A standalone manuscript writing canvas located at `/editor`:
-* **Typeset Metadata Deck**: Inputs for Dispatch Title, Deck Subtitle, Category, Tags, and Cover Image URL.
-* **Editorial Markdown Toolbar**: Quick inserters for bold (`**`), italic (`*`), monospace code blocks (` ``` `), blockquotes (`>`), bullet lists (`- `), and links.
-* **Telemetry Bar**: Live character count, word count, and estimated read time.
-* **Split Broadsheet Preview**: Real-time dual-pane proofing to preview live typography alongside markdown.
-* **Publishing Controls**:
-  * **`[ ✂ SAVE DRAFT ]`**: Saves article to local draft storage with optimistic feedback.
-  * **`[ ➔ PUBLISH BLOG ]`**: Publishes dispatch, updates live story feeds, and redirects to desk.
-  * **`[ ✦ DARK / LIGHT ]`**: Editor-specific theme toggle synced with global theme.
-  * **`[ ➔ WRITER DESK ]`**: One-click navigation back to workbench.
+### 3.2. Dedicated Editor Integration Architecture
+The codebase is structured to cleanly accept the separate dedicated editor page added afterward:
+* **Configuration Point**:
+  ```javascript
+  const EDITOR_CONFIG = {
+    editorRoute: "/editor", // Target path for dedicated editor
+  };
 
-### 3.3. Dedicated Editorial Board Desk (`/editorial-board.html` & `/editorial`)
-A specialized administrative workbench for the ACES Faculty & Editorial Committee:
-* **Role Separation**: Decoupled from author desks so normal writers cannot self-grant badges.
-* **Accreditation Issuance Desk**:
-  * Candidate author selection (`user-1`, `user-2`, etc.).
-  * Accolade preset dropdown:
-    * `★ TOP CONTRIBUTOR '25 (Peer Leader)`
-    * `⚡ SYSTEMS LEAD (Kernel Specialist)`
-    * `🏆 EDITORIAL CHOICE '25 (Flagship Dispatch)`
-    * `🎖️ RESEARCH FELLOW (Faculty Commended)`
-    * `CUSTOM (Type bespoke accolade...)`
-  * Awarding Body branding (`ACES PVGCOET Editorial Board`).
-  * Badge Ink Treatment: `Solid Black Frame` vs. `Crisp Paper Outline`.
-  * Action: **`[ ★ ACCREDIT & AWARD BADGE ]`** calling `POST /api/profile/:id/badges`.
-* **Active Accreditations Registry & Ledger**:
-  * Real-time ledger displaying all active honors awarded to the selected author.
-  * Includes official timestamps, badge ink previews, and **`[ ✂ REVOKE ]`** actions calling `DELETE /api/profile/:id/badges`.
+  function openDedicatedEditor(e, blogId) {
+    if (e && e.preventDefault) e.preventDefault();
+    const targetUrl = blogId
+      ? EDITOR_CONFIG.editorRoute + "?id=" + encodeURIComponent(blogId)
+      : EDITOR_CONFIG.editorRoute;
+    window.location.href = targetUrl;
+  }
+  ```
+* Clicking either **`[ ➔ WRITE BLOG ]`** in the topbar or **`[ ✂ EDIT ]`** in any story row routes directly to the dedicated editor with optional manuscript ID parameter.
 
-### 3.4. Public Profile & Campus Leaderboard (`/profile/[id]` & `/api/ranking`)
-* **Public Profile Pass**: Renders student fellow rank, hometown, companion, school, and accredited honors.
-* **Campus Podium & Leaderboard**: Displays house rankings, points, and daily streak records.
+### 3.3. Editorial Accreditation & Database Architecture
+* Editorial administration is intentionally uncoupled from the author's frontend.
+* The Prisma `Badge` data model and `/api/profile/[id]/badges` REST endpoints remain active.
+* When a designated team member updates the database or issues badges/nicknames, they automatically appear in the author's `#authorBadgesCluster`.
 
 ---
 
-## 4. Technical Architecture & Data Layer
+## 4. Technical Architecture & File Directory
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Next.js 16 (App Router)                  │
-├───────────────────────────────┬─────────────────────────────┤
-│      Frontend Pages           │      Server API Routes      │
-│  - /writer-profile.html       │  - GET, PUT /api/profile/:id│
-│  - /editorial-board.html      │  - GET, POST, DELETE        │
-│  - /editor (page.tsx)         │    /api/profile/:id/badges  │
-│  - /editorial (page.tsx)      │  - GET /api/ranking         │
-│  - /profile/[id] (page.tsx)   │  - GET /api/health          │
-├───────────────────────────────┴─────────────────────────────┤
-│                    Profile Service Layer                    │
-│     (Dual-layer resilience: Prisma DB + Mock Store Fallback) │
-├───────────────────────────────┬─────────────────────────────┤
-│         Prisma ORM            │     Browser Persistence     │
-│   PostgreSQL Database         │  - localStorage.aces_theme  │
-│   (Users, Badges, Teams)      │  - localStorage.aces_profile│
-│                               │  - localStorage.aces_badges │
-└───────────────────────────────┴─────────────────────────────┘
+d:/blog_front_prof_pg
+├── connections.md                        # Complete Architecture & Flowchart Map
+├── PROJECT_SUMMARY.md                    # Comprehensive Project Documentation
+├── app/
+│   ├── api/
+│   │   ├── health/route.ts               # Healthcheck heartbeat
+│   │   ├── profile/[id]/route.ts         # Author profile GET & PUT
+│   │   ├── profile/[id]/badges/route.ts  # Badges GET, POST, DELETE
+│   │   └── ranking/route.ts              # Campus ranking route
+│   ├── profile/[id]/page.tsx             # Public profile route (redirects to desk)
+│   ├── layout.tsx & globals.css          # Core layout & styling resets
+│   ├── not-found.tsx                     # Broadsheet 404 page
+│   └── page.tsx                          # Root landing page (redirects to desk)
+├── lib/
+│   ├── mock-data.ts                      # Offline/fallback mock data
+│   ├── prisma.ts                         # Prisma client singleton
+│   ├── profile-service.ts                # Resilient data retrieval service
+│   └── types.ts                          # TypeScript types & interfaces
+├── prisma/
+│   ├── schema.prisma                     # PostgreSQL data models (User, Badge, Team)
+│   └── seed.ts                           # Database seeding script
+├── public/
+│   ├── writer-profile.html               # Writer Profile Desk & Workbench
+│   └── images/                           # Avatars & placeholder assets
+├── next.config.ts, tsconfig.json, etc.   # Next.js & TypeScript configs
+└── package.json
 ```
-
-### 4.1. Prisma Schema (`prisma/schema.prisma`)
-The PostgreSQL schema defines three primary models:
-* **`User`**: Author identity (`id`, `name`, `email`, `school`, `city`, `companion`, `rankTitle`, `avatarUrl`, `bannerUrl`, `badges[]`).
-* **`Badge`**: Editorial honors (`id`, `name`, `iconUrl`, `earnedAt`, `userId` foreign key with cascade deletion).
-* **`Team`**: Campus leaderboard groups (`id`, `name`, `points`, `streakDays`, `rank`, `emblemVariant`).
-
-### 4.2. Dual-Layer Fault Tolerance
-If the PostgreSQL instance is offline during local evaluation or front-end review:
-* `lib/profile-service.ts` catches connection timeouts gracefully.
-* Automatically falls back to in-memory mock data and browser `localStorage`.
-* Prevents 500 crashes and enables 100% offline development.
 
 ---
 
-## 5. Summary of All API Endpoints
+## 5. Summary of All Active API Endpoints
 
 | Method | Endpoint | Description | Payload | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **`GET`** | `/api/profile/:id` | Retrieve author profile & badges | None | `200 OK` |
 | **`PUT`** | `/api/profile/:id` | Update author credentials (Name, Avatar, Bio) | `{ name, profileImg, username, bio }` | `200 OK` |
 | **`GET`** | `/api/profile/:id/badges` | List accredited accolades for an author | None | `200 OK` |
-| **`POST`** | `/api/profile/:id/badges` | Accredit new editorial badge to author | `{ name, emoji, awardedBy, style }` | `201 Created` |
+| **`POST`** | `/api/profile/:id/badges` | Accredit new editorial badge/nickname to author | `{ name, emoji, awardedBy, style }` | `201 Created` |
 | **`DELETE`** | `/api/profile/:id/badges` | Revoke an accredited badge | Query `?badgeId=...` | `200 OK` |
 | **`GET`** | `/api/ranking` | Fetch campus leaderboard teams & rankings | None | `200 OK` |
 | **`GET`** | `/api/health` | Server heartbeat & healthcheck | None | `200 OK` |
-
----
-
-## 6. Key Refinements Completed
-
-During recent iterations, the platform was refined based on user directives:
-1. **Old-Money Broadsheet Preserved**: Maintained authentic broadsheet aesthetics, high-contrast borders, and Merriweather/Anton typography.
-2. **Theme Switcher Simplified**: Theme toggle text changed from stylized phrases to clean **`✦ DARK`** (in light mode) and **`✦ LIGHT`** (in dark mode).
-3. **Clutter Removed**:
-   - Removed obsolete header banner (`THE CAMPUS BROADSHEET`).
-   - Removed `PRINT GAZETTE` button.
-   - Removed `READERSHIP VOLUME BY PUBLICATION` step chart.
-   - Removed `ASSIGN FACULTY PEER REVIEWER` dropdown from author view.
-4. **Thumbnail Fill**: All story thumbnail covers set to `object-fit: cover; width: 100%; height: 100%` to fill media blocks without blank padding.
-5. **Modal Bug Resolved**: Fixed unstyled modal divs (`.snappy-modal-backdrop` → `.snappy-modal-overlay`), keeping author credential settings completely hidden until `[ ✎ EDIT PROFILE ]` is clicked.
-6. **Editorial Role Separation**: Moved administrative accolade issuance from the author desk into its own dedicated page (`/editorial-board.html` & `/editorial`).
-7. **Stand-Alone Editor Connected**: Connected `➔ WRITE BLOG` and `[ ✂ EDIT ]` directly to the `/editor` suite.
-8. **Comprehensive Connections Map**: Architecture flowcharts and API contracts fully documented in `connections.md`.
-
----
-
-## 7. Project File Directory Guide
-
-```
-d:\blog_front_prof_pg\
-├── app\
-│   ├── api\
-│   │   ├── health\route.ts                # Heartbeat endpoint
-│   │   ├── profile\[id]\route.ts          # Profile GET & PUT
-│   │   ├── profile\[id]\badges\route.ts   # Badges GET, POST, DELETE
-│   │   └── ranking\route.ts               # Campus leaderboard
-│   ├── editor\page.tsx                    # Standalone Blog Editor UI
-│   ├── editorial\page.tsx                 # Dedicated Editorial Board Route
-│   ├── profile\[id]\page.tsx              # Public Fellow Profile View
-│   ├── layout.tsx & globals.css           # Global shell & broadsheet resets
-│   └── page.tsx                           # Root landing page
-├── components\                            # Reusable React UI widgets
-├── lib\
-│   ├── format.ts                          # Number & date formatting utilities
-│   ├── mock-data.ts                       # Broadsheet seed and mock store
-│   ├── prisma.ts                          # Prisma database client singleton
-│   ├── profile-service.ts                 # Resilient data retrieval service
-│   └── types.ts                           # Full TypeScript interfaces
-├── prisma\
-│   ├── schema.prisma                      # PostgreSQL data model definitions
-│   └── seed.ts                            # Database seeding script
-├── public\
-│   ├── writer-profile.html                # Writer Profile workbench (Static)
-│   ├── editorial-board.html               # Editorial Board Desk (Static)
-│   └── images\                            # Avatars & placeholders
-├── connections.md                         # Mermaid architecture diagrams
-├── writer-profile.html                    # Root mirror of writer desk
-├── editorial-board.html                   # Root mirror of editorial desk
-└── package.json                           # Dependencies & Next.js config
-```

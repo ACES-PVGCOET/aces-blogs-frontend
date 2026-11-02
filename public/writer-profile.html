@@ -1484,15 +1484,11 @@
           <span>● MOCK ACTIVE</span>
         </div>
 
-        <a href="/editorial-board.html" class="btn-action-snappy" style="text-decoration: none; padding: 0.35rem 0.75rem;" title="Official Editorial Board Accreditation & Labels Desk">
-          <span>⚖ EDITORIAL DESK</span>
-        </a>
-
         <button id="themeToggleBtn" class="btn-icon-switch" title="Toggle ink contrast">
           <span id="themeToggleLabel">✦ DARK</span>
         </button>
 
-        <a href="/editor" id="openComposerTopBtn" class="btn-primary-write" style="text-decoration: none;" title="Open dedicated blog editor">
+        <a href="/editor" id="openComposerTopBtn" class="btn-primary-write" style="text-decoration: none;" title="Open dedicated blog editor" onclick="openDedicatedEditor(event)">
           <span>➔ WRITE BLOG</span>
         </a>
       </div>
@@ -1561,9 +1557,6 @@
           <div class="author-footer-compartment">
             <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
               <div class="badge-pills-cluster" id="authorBadgesCluster"></div>
-              <a href="/editorial-board.html" class="btn-action-snappy" style="width: auto; padding: 0.2rem 0.65rem; text-decoration: none; font-size: 0.72rem;" title="Open ACES Editorial Board Accreditation Registry">
-                <span>⚖ EDITORIAL DESK ➔</span>
-              </a>
             </div>
             <div class="social-anchors-group" id="socialAnchorsBox"></div>
           </div>
@@ -1635,7 +1628,7 @@
               <option value="title_asc">TITLE (A → Z)</option>
             </select>
 
-            <a href="/editor" id="quickCreateDraftBtn" class="btn-action-snappy btn-primary-action" style="text-decoration: none;" title="Open dedicated blog editor">
+            <a href="/editor" id="quickCreateDraftBtn" class="btn-action-snappy btn-primary-action" style="text-decoration: none;" title="Open dedicated blog editor" onclick="openDedicatedEditor(event)">
               <span>➔ WRITE BLOG</span>
             </a>
           </div>
@@ -1699,46 +1692,6 @@
         <a id="modalOpenLiveBtn" href="#" class="btn-action-snappy btn-primary-action" target="_blank" rel="noopener noreferrer">
           <span>☛ OPEN LIVE DISPATCH</span>
         </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Story Composer Modal -->
-  <div class="snappy-modal-overlay" id="composerModalOverlay" role="dialog" aria-modal="true" aria-labelledby="composerTitleHeading">
-    <div class="snappy-modal-pane">
-      <div class="snappy-modal-head">
-        <h3 class="snappy-modal-title" id="composerTitleHeading">DRAFT NEW TECHNICAL DISPATCH</h3>
-        <button id="closeComposerModalBtn" class="btn-close-modal" aria-label="Close composer">[ ✕ CANCEL ]</button>
-      </div>
-      <div class="snappy-modal-content">
-        <form id="composerStoryForm" onsubmit="submitNewDraft(event)">
-          <div class="form-field-group">
-            <label class="form-field-label" for="inpTitle">Dispatch Headline</label>
-            <input type="text" id="inpTitle" class="form-text-input" placeholder="e.g. Profiling Linux eBPF in High-Throughput Microservices" required />
-          </div>
-
-          <div class="form-field-group">
-            <label class="form-field-label" for="selCategory">Category Track</label>
-            <select id="selCategory" class="form-select-box">
-              <option value="Systems & Kernel">Systems & Kernel</option>
-              <option value="Distributed Consensus">Distributed Consensus</option>
-              <option value="Compiler Architectures">Compiler Architectures</option>
-              <option value="Cloud Infrastructure">Cloud Infrastructure</option>
-              <option value="Applied Cryptography">Applied Cryptography</option>
-              <option value="Campus Engineering">Campus Engineering</option>
-            </select>
-          </div>
-
-          <div class="form-field-group">
-            <label class="form-field-label" for="txtIntro">Article Abstract / Opening Thesis</label>
-            <textarea id="txtIntro" class="form-textarea-box" placeholder="Write an executive summary or opening thesis for the peer review committee..." required></textarea>
-          </div>
-
-          <div class="snappy-modal-foot" style="padding-right: 0; padding-bottom: 0; background: none; border: none;">
-            <button type="button" class="btn-action-snappy" onclick="closeComposerModal()">[ ✕ CANCEL ]</button>
-            <button type="submit" class="btn-primary-write">➔ CREATE INITIAL DRAFT</button>
-          </div>
-        </form>
       </div>
     </div>
   </div>
@@ -2318,7 +2271,7 @@
               <div class="empty-symbol">¶</div>
               <h3 style="font-size: 1.35rem; font-weight: 900;">NO DISPATCHES FILED YET</h3>
               <p style="font-family: var(--font-body); font-size: 0.95rem; max-width: 440px;">Commence composition of your next technical breakdown or system architecture analysis for the student body.</p>
-              <button class="btn-primary-write" onclick="openComposerModal()">
+              <button class="btn-primary-write" onclick="openDedicatedEditor(event)">
                 <span>➔ COMPOSE FIRST DISPATCH</span>
               </button>
             </div>
@@ -2422,6 +2375,24 @@
       return row;
     }
 
+    
+    /**
+     * Dedicated Editor Integration Configuration
+     * The standalone editor page will be added here subsequently.
+     * By default, it targets the dedicated editor route "/editor".
+     */
+    const EDITOR_CONFIG = {
+      editorRoute: "/editor",
+    };
+
+    function openDedicatedEditor(e, blogId) {
+      if (e && e.preventDefault) e.preventDefault();
+      const targetUrl = blogId
+        ? EDITOR_CONFIG.editorRoute + "?id=" + encodeURIComponent(blogId)
+        : EDITOR_CONFIG.editorRoute;
+      window.location.href = targetUrl;
+    }
+
     function renderRowActions(container, blog) {
       container.innerHTML = "";
       const isBusy = STATE.inProgressIds.has(blog.id);
@@ -2461,9 +2432,7 @@
         editBtn.disabled = true;
         editBtn.setAttribute("data-tooltip", editHint);
       } else {
-        editBtn.addEventListener("click", () => {
-          showToast("Opening composition desk for \"" + blog.title + "\"...", "info");
-        });
+        editBtn.addEventListener("click", () => openDedicatedEditor(null, blog.id));
       }
       container.appendChild(editBtn);
 
@@ -2743,120 +2712,9 @@
       showToast("Author credentials updated and saved to desk!", "success");
     }
 
-    function openEditorialBadgeModal() {
-      const modal = document.getElementById("editorialBadgeModalOverlay");
-      if (modal) modal.classList.add("open");
-    }
+    
 
-    function closeEditorialBadgeModal() {
-      const modal = document.getElementById("editorialBadgeModalOverlay");
-      if (modal) modal.classList.remove("open");
-    }
-
-    function onBadgePresetChange(val) {
-      const customGroup = document.getElementById("customBadgeGroup");
-      if (customGroup) {
-        customGroup.style.display = val === "CUSTOM" ? "block" : "none";
-      }
-    }
-
-    async function awardEditorialBadge(e) {
-      e.preventDefault();
-      const preset = document.getElementById("badgeSelectPreset").value;
-      const customName = document.getElementById("txtCustomBadgeName") ? document.getElementById("txtCustomBadgeName").value.trim() : "";
-      const awardedBy = document.getElementById("txtAwardedBy").value.trim() || "ACES Editorial Board";
-      const style = document.getElementById("selBadgeStyle").value;
-
-      let badgeText = preset;
-      let badgeEmoji = "★";
-
-      if (preset === "CUSTOM") {
-        badgeText = customName || "FELLOW CONTRIBUTOR";
-        badgeEmoji = "★";
-      } else if (preset.includes("⚡")) {
-        badgeEmoji = "⚡";
-      } else if (preset.includes("🏆")) {
-        badgeEmoji = "🏆";
-      } else if (preset.includes("🎖️")) {
-        badgeEmoji = "🎖️";
-      }
-
-      const newBadge = {
-        key: "editorial-" + Date.now(),
-        text: badgeText,
-        emoji: badgeEmoji,
-        awarded: style === "solid",
-        awardedBy: awardedBy,
-        awardedAt: new Date().toISOString()
-      };
-
-      if (!STATE.profile.labels) STATE.profile.labels = [];
-      STATE.profile.labels.push(newBadge);
-
-      try {
-        localStorage.setItem("aces_user_profile", JSON.stringify(STATE.profile));
-      } catch (err) {}
-
-      try {
-        await apiRequest("POST", "/users/" + encodeURIComponent(CONFIG.CURRENT_USER.id) + "/badges", newBadge);
-      } catch (err) {}
-
-      renderProfile();
-      closeEditorialBadgeModal();
-      showToast("Official accolade accredited by " + awardedBy + "!", "success");
-    }
-
-    function openComposerModal() {
-      const modal = document.getElementById("composerModalOverlay");
-      if (modal) modal.classList.add("open");
-    }
-
-    function closeComposerModal() {
-      const modal = document.getElementById("composerModalOverlay");
-      if (modal) modal.classList.remove("open");
-    }
-
-    function submitNewDraft(e) {
-      e.preventDefault();
-      const title = document.getElementById("inpTitle").value.trim();
-      const category = document.getElementById("selCategory").value;
-      const intro = document.getElementById("txtIntro").value.trim();
-
-      if (!title) return;
-
-      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-
-      const newBlog = {
-        id: "draft-" + Date.now(),
-        slug: slug || "untitled-draft",
-        title: title,
-        thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80",
-        author: CONFIG.CURRENT_USER.id,
-        reviewer: null,
-        status: "DRAFT",
-        category: category,
-        tags: [category.toLowerCase().replace(/[^a-z]+/g, "-")],
-        readsCount: 0,
-        readTime: "4 min read",
-        rejectionReason: null,
-        latestRevisionVersion: 1,
-        latestPublishedVersion: 0,
-        createdAt: new Date().toISOString(),
-        modifiedAt: new Date().toISOString()
-      };
-
-      MOCK.blogs.unshift(newBlog);
-      STATE.blogs.unshift(newBlog);
-
-      closeComposerModal();
-      document.getElementById("composerStoryForm").reset();
-
-      updateTabCounters();
-      updateInsightsStats();
-      applyFiltersAndRender();
-
-      showToast("Draft \"" + title + "\" created successfully!", "success");
-    }
+    
 
     /**
      * =====================================================================
@@ -2972,12 +2830,6 @@
 
       const topWriteBtn = document.getElementById("openComposerTopBtn");
       const quickDraftBtn = document.getElementById("quickCreateDraftBtn");
-      if (topWriteBtn) topWriteBtn.addEventListener("click", openComposerModal);
-      if (quickDraftBtn) quickDraftBtn.addEventListener("click", openComposerModal);
-
-      const closeCompBtn = document.getElementById("closeComposerModalBtn");
-      if (closeCompBtn) closeCompBtn.addEventListener("click", closeComposerModal);
-
       const bioBtn = document.getElementById("bioExpandBtn");
       const bioText = document.getElementById("bioContentSpan");
       if (bioBtn && bioText) {
@@ -3043,18 +2895,15 @@
         });
       }
 
-      const compModal = document.getElementById("composerModalOverlay");
       if (compModal) {
         compModal.addEventListener("click", e => {
-          if (e.target === compModal) closeComposerModal();
-        });
+          });
       }
 
       window.addEventListener("keydown", e => {
         if (e.key === "Escape") {
           if (readerModal && readerModal.classList.contains("open")) readerModal.classList.remove("open");
-          if (compModal && compModal.classList.contains("open")) closeComposerModal();
-        }
+          }
       });
 
       loadProfile();

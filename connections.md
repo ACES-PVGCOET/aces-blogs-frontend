@@ -10,9 +10,12 @@ This document outlines the complete architectural topology, component connection
 flowchart TD
     subgraph ClientUI["Client Frontend (Browser)"]
         ProfilePage["Writer Profile Desk<br/>(/writer-profile.html)"]
-        EditorPage["Dedicated Blog Editor<br/>(/editor)"]
+        DedicatedEditor["Standalone Dedicated Editor<br/>(Targeted via openDedicatedEditor /editor)"]
         ProfileModal["User Credentials Modal<br/>(Opens via [✎ EDIT PROFILE] popup)"]
-        EditorialPage["Dedicated Editorial Board Desk<br/>(/editorial-board.html & /editorial)"]
+    end
+
+    subgraph EditorialAccess["Editorial Committee Direct Access"]
+        EditorialAdmin["Editorial Team Member<br/>(Direct Database / API Access for Nicknames & Badges)"]
     end
 
     subgraph API["Next.js Server API Routes (/api)"]
@@ -25,7 +28,7 @@ flowchart TD
     subgraph Storage["Persistence & Data Layer"]
         PrismaORM["Prisma Client ORM"]
         PostgresDB[("PostgreSQL Database")]
-        LocalStorage["Browser LocalStorage<br/>(aces_user_profile, aces_editor_blogs, aces_theme)"]
+        LocalStorage["Browser LocalStorage<br/>(aces_user_profile, aces_theme)"]
     end
 
     ProfilePage -- "1. Reads Profile & Dispatches" --> ProfileAPI
@@ -33,15 +36,11 @@ flowchart TD
     ProfileModal -- "PUT /api/profile/:id" --> ProfileAPI
     ProfileModal -- "Caches in" --> LocalStorage
 
-    ProfilePage -- "3. [➔ WRITE BLOG] Click" --> EditorPage
-    ProfilePage -- "4. [✂ EDIT] Click with ?id=" --> EditorPage
-    EditorPage -- "Saves Drafts / Publishes" --> LocalStorage
-    EditorPage -- "Returns to Desk" --> ProfilePage
+    ProfilePage -- "3. [➔ WRITE BLOG] Click" --> DedicatedEditor
+    ProfilePage -- "4. [✂ EDIT] Click with ?id=" --> DedicatedEditor
 
-    ProfilePage -- "5. [⚖ EDITORIAL DESK] Link" --> EditorialPage
-    EditorialPage -- "POST /api/profile/:id/badges" --> BadgesAPI
-    EditorialPage -- "DELETE /api/profile/:id/badges" --> BadgesAPI
-    BadgesAPI --> LocalStorage
+    EditorialAdmin -- "Accredits Nicknames & Badges directly" --> BadgesAPI
+    ProfilePage -- "5. Displays Accredited Nicknames" --> BadgesAPI
 
     ProfileAPI --> PrismaORM
     BadgesAPI --> PrismaORM
@@ -86,73 +85,52 @@ sequenceDiagram
 
 ---
 
-## 3. Dedicated Blog Editor Connection Flow (Photo 3)
+## 3. Dedicated Blog Editor Connection Architecture
+
+The workbench maintains active integration hooks (`[ ➔ WRITE BLOG ]` and `[ ✂ EDIT ]`) structured to seamlessly open the separate dedicated editor page added afterward.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as Author
-    participant Desk as Writer Profile Desk
-    participant Editor as Dedicated Editor UI (/editor)
-    participant Storage as LocalStorage / Blog Service
+    actor Author as Author (User)
+    participant Desk as Writer Profile Desk (/writer-profile.html)
+    participant RouteHook as openDedicatedEditor(event, blogId)
+    participant DedicatedEditor as Separate Dedicated Editor Page (Added Afterward)
 
-    Note over Author,Storage: Photo 3: "➔ WRITE BLOG" navigates to standalone editor
-    Author->>Desk: Clicks "➔ WRITE BLOG" (or "➔ NEW BLOG")
-    Desk->>Editor: Navigate to /editor (or /editor?id=... for editing)
-    
-    alt Editing Existing Blog
-        Editor->>Storage: Load blog by ID from storage / API
-        Storage-->>Editor: Populate Title, Category, Thumbnail, Excerpt & Markdown
-    else New Blog
-        Editor->>Editor: Initialize clean manuscript canvas & typeset toolbar
-    end
+    Note over Author,DedicatedEditor: "➔ WRITE BLOG" button triggers connection to dedicated editor
+    Author->>Desk: Clicks "➔ WRITE BLOG" (or "➔ COMPOSE FIRST DISPATCH")
+    Desk->>RouteHook: openDedicatedEditor(e)
+    RouteHook->>DedicatedEditor: Navigates to EDITOR_CONFIG.editorRoute (/editor)
 
-    Author->>Editor: Typesets content, inputs headline, category & cover image
-    Author->>Editor: Toggles [ ✦ SPLIT PREVIEW ] for live broadsheet ink proof
-
-    alt Save as Draft
-        Author->>Editor: Clicks [ ✂ SAVE DRAFT ]
-        Editor->>Storage: Save blog with status "DRAFT"
-        Editor-->>Author: Toast: "Draft saved to your desk"
-    else Publish Blog
-        Author->>Editor: Clicks [ ➔ PUBLISH BLOG ]
-        Editor->>Storage: Save blog with status "PUBLISHED"
-        Editor->>Desk: Redirect to /writer-profile.html
-        Desk-->>Author: Live story stream displays new blog dispatch!
-    end
+    Note over Author,DedicatedEditor: Row "[ ✂ EDIT ]" connects to editor with manuscript ID
+    Author->>Desk: Clicks "[ ✂ EDIT ]" on story row
+    Desk->>RouteHook: openDedicatedEditor(e, story.id)
+    RouteHook->>DedicatedEditor: Navigates to /editor?id={story.id}
 ```
 
 ---
 
-## 4. Dedicated Editorial Board Accreditation Desk (/editorial-board.html)
+## 4. Editorial Team Database & Nickname Accreditation Architecture
+
+The public website does not expose editorial administrative controls. Instead, designated members of the ACES Editorial Committee manage official accolades, nicknames, and recognition labels directly via database access or backend credentials.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Editorial as ACES Editorial Team / Faculty
-    participant Desk as Profile Desk UI (/writer-profile.html)
-    participant BoardPage as Editorial Board Desk (/editorial-board.html)
+    actor EditorialAdmin as Editorial Team Member (Database Access)
     participant API as /api/profile/:id/badges
-    participant DB as Prisma / Database
+    participant DB as Prisma / Database (PostgreSQL)
+    participant Desk as Writer Profile Desk (/writer-profile.html)
 
-    Note over Editorial,DB: Photo 5: Official accolades managed on dedicated Editorial Board page
-    Editorial->>Desk: Clicks [ ⚖ EDITORIAL DESK ] in top bar
-    Desk->>BoardPage: Navigates to /editorial-board.html
-    BoardPage->>API: GET /api/profile/:id/badges (loads active registry ledger)
-    API-->>BoardPage: Returns active accredited honours
+    Note over EditorialAdmin,Desk: Editorial team member awards nicknames/badges via direct DB access
+    EditorialAdmin->>DB: Inserts Badge record (or calls POST /api/profile/:id/badges)
+    DB-->>DB: Badge tied to Author (userId) with name, emoji & timestamps
 
-    Editorial->>BoardPage: Selects Author (e.g. Aarav Sharma)
-    Editorial->>BoardPage: Selects Accolade ("★ TOP CONTRIBUTOR '25", "⚡ SYSTEMS LEAD", etc.)
-    Editorial->>BoardPage: Configures Awarding Body & Ink Style (Solid vs Outline)
-    Editorial->>BoardPage: Submits [ ★ ACCREDIT & AWARD BADGE ]
-
-    BoardPage->>API: POST /api/profile/:id/badges with payload
-    API->>DB: Record new accreditation tied to Author
-    DB-->>API: Confirm record created
-    API-->>BoardPage: 201 Created { success: true, badge: { ... } }
-
-    BoardPage-->>BoardPage: Live Ledger updates with new badge & [ ✂ REVOKE ] action
-    BoardPage->>Desk: Author's profile card displays official badge pill
+    Author->>Desk: Visits Writer Profile Desk
+    Desk->>API: GET /api/profile/:id
+    API->>DB: Query User with embedded Badges
+    DB-->>API: Returns User { badges: [...] }
+    API-->>Desk: Hydrates #authorBadgesCluster with official nickname/award pills
 ```
 
 ---
@@ -175,12 +153,11 @@ sequenceDiagram
 
 | UI Trigger Button | Target / Action | User Role | Description |
 | :--- | :--- | :--- | :--- |
-| **`➔ WRITE BLOG`** (Topbar) | Navigate to `/editor` | Author | Opens dedicated full-page blog composer (Photo 3) |
-| **`➔ WRITE BLOG`** (Workbench) | Navigate to `/editor` | Author | Opens dedicated blog composer from workbench |
-| **`[ ✂ EDIT ]`** (Row Action) | Navigate to `/editor?id={blogId}` | Author | Opens existing article for manuscript revision |
-| **`[ ✎ EDIT PROFILE ]`** | Opens `#profileModalOverlay` | Author | Allows author to update avatar photo, name, and bio (Photo 1 & 2) |
-| **`[ ★ EDITORIAL: AWARD LABEL ]`** | Opens `#editorialBadgeModalOverlay` | Editorial Team | Allows editorial board to accredit official accolades (Photo 5) |
-| **`[ ☛ PREVIEW ]`** | Opens `#readerModalOverlay` | Any / Reader | In-modal technical manuscript preview |
+| **`➔ WRITE BLOG`** (Topbar) | `openDedicatedEditor(e)` | Author | Navigates to `/editor` (Dedicated editor page added afterward) |
+| **`➔ WRITE BLOG`** (Workbench) | `openDedicatedEditor(e)` | Author | Navigates to `/editor` from dispatches toolbar |
+| **`[ ✂ EDIT ]`** (Row Action) | `openDedicatedEditor(e, id)` | Author | Opens dedicated editor with article ID parameter |
+| **`[ ✎ EDIT PROFILE ]`** | Opens `#profileModalOverlay` | Author | Allows author to update avatar photo, name, handle, and bio |
+| **`[ ☛ PREVIEW ]`** | Opens `#readerModalOverlay` | Any / Reader | In-modal technical manuscript preview proof |
 
 ---
 
