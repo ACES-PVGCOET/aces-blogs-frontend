@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Anton, Merriweather, Courier_Prime } from "next/font/google";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const anton = Anton({
@@ -24,8 +27,9 @@ const courierPrime = Courier_Prime({
 });
 
 export const metadata: Metadata = {
-  title: "Aarav Sharma · Editorial Profile & Dispatch | Blog Aces",
-  description: "ACES Blog - Broadside Technical Gazette, Writer Profile & Editorial Workbench.",
+  title: "ACES Broadsheet Gazette · Technical Publishing Platform & Creator Workbench",
+  description:
+    "The Official Academic Technical Chronicle & Editorial Publishing Platform. Department of Computer Engineering · ACES PVGCOET Pune.",
 };
 
 export default function RootLayout({
@@ -34,9 +38,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${anton.variable} ${merriweather.variable} ${courierPrime.variable}`}>
-      <body className="min-h-screen bg-white text-black antialiased flex flex-col selection:bg-black selection:text-white">
-        {children}
+    <html
+      lang="en"
+      className={`${anton.variable} ${merriweather.variable} ${courierPrime.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+              try {
+                var theme = localStorage.getItem('aces_theme') || 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+              } catch(e){}
+            })();`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-body)] antialiased flex flex-col selection:bg-[var(--text-main)] selection:text-[var(--bg-canvas)]">
+        <Suspense fallback={<div className="h-20 bg-[var(--bg-card)] border-b-4 border-[var(--border-black)]" />}>
+          <Navbar />
+        </Suspense>
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
