@@ -98,6 +98,9 @@ export default function Navbar() {
                 <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 border border-[var(--border-black)] uppercase bg-[var(--bg-card)] text-[var(--text-main)]">
                   PVGCOET
                 </span>
+                <span className="font-mono text-[10px] font-black px-1.5 py-0.5 border border-[var(--border-black)] uppercase bg-amber-400 text-black tracking-wider">
+                  PREVIEW
+                </span>
               </div>
               <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--text-muted)] -mt-1 hidden sm:inline">
                 Broadsheet Technical Chronicle

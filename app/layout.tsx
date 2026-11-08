@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Anton, Merriweather, Courier_Prime } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WelcomePreviewModal from "@/components/WelcomePreviewModal";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
@@ -56,8 +57,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-body)] antialiased flex flex-col selection:bg-[var(--text-main)] selection:text-[var(--bg-canvas)]">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-body)] antialiased flex flex-col selection:bg-[var(--text-main)] selection:text-[var(--bg-canvas)]"
+      >
         <AuthProvider>
+          <WelcomePreviewModal />
           <Suspense fallback={<div className="h-20 bg-[var(--bg-card)] border-b-4 border-[var(--border-black)]" />}>
             <Navbar />
           </Suspense>

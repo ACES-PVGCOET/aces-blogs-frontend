@@ -6,7 +6,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getBlogByIdOrSlug, saveBlog } from "@/lib/blog-service";
 import { Blog } from "@/lib/types";
 import { apiClient } from "@/lib/api-client";
-import { ImageIcon, Loader2, X } from "lucide-react";
+import { ImageIcon, Loader2 } from "lucide-react";
+import type { JSONContent } from "@tiptap/react";
+import TipTapEditor from "@/components/editor/TipTapEditor";
+import TipTapPreview from "@/components/editor/TipTapPreview";
+import TipTapJsonViewer from "@/components/editor/TipTapJsonViewer";
+import { convertTextOrMarkdownToTipTap, EMPTY_DISPATCH_JSON } from "@/lib/tiptap-utils";
 
 function EditorContent() {
   const router = useRouter();
@@ -21,15 +26,34 @@ function EditorContent() {
   const [readTime, setReadTime] = useState(() => existing?.readTime || "5 min read");
   const [thumbnail, setThumbnail] = useState(() => existing?.thumbnail || "");
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
-  const [isUploadingBodyImage, setIsUploadingBodyImage] = useState(false);
   const [excerpt, setExcerpt] = useState(() => existing?.excerpt || "");
-  const [content, setContent] = useState(() => existing?.content || "");
   const [status, setStatus] = useState<Blog["status"]>(() => existing?.status || "DRAFT");
-  const [activeTab, setActiveTab] = useState<"edit" | "preview" | "split">("split");
+  const [activeTab, setActiveTab] = useState<"edit" | "preview" | "split" | "json">("split");
   const [message, setMessage] = useState<string | null>(null);
 
+  // TipTap Content State
+  const [contentJson, setContentJson] = useState<JSONContent>(() => {
+    if (existing?.contentJson) {
+      return existing.contentJson as JSONContent;
+    }
+    if (existing?.content) {
+      return convertTextOrMarkdownToTipTap(existing.content);
+    }
+    return EMPTY_DISPATCH_JSON;
+  });
+  const [contentText, setContentText] = useState<string>(() => existing?.content || "");
+
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
-  const bodyImageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleEditorChange = (json: JSONContent, text: string) => {
+    setContentJson(json);
+    setContentText(text);
+
+    // Calculate approximate reading time dynamically
+    const words = text.split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.ceil(words / 200));
+    setReadTime(`${minutes} min read`);
+  };
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -63,60 +87,6 @@ function EditorContent() {
     reader.readAsDataURL(file);
   };
 
-  const handleBodyImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image exceeds 5MB limit.");
-      return;
-    }
-
-    setIsUploadingBodyImage(true);
-    let finalUrl = "";
-    try {
-      const res = await apiClient.uploads.image(file);
-      if (res?.url) {
-        finalUrl = res.url;
-      }
-    } catch (err) {
-      console.warn("Backend body image upload failed, falling back to local file reader:", err);
-    } finally {
-      setIsUploadingBodyImage(false);
-      if (bodyImageInputRef.current) bodyImageInputRef.current.value = "";
-    }
-
-    if (!finalUrl) {
-      const reader = new FileReader();
-      reader.onload = (loadEvt) => {
-        const result = loadEvt.target?.result as string;
-        if (result) {
-          insertImageMarkdown(result, file.name.replace(/\.[^.]+$/, ""));
-        }
-      };
-      reader.readAsDataURL(file);
-      return;
-    }
-
-    insertImageMarkdown(finalUrl, file.name.replace(/\.[^.]+$/, ""));
-  };
-
-  const insertImageMarkdown = (url: string, defaultAlt: string) => {
-    const textarea = document.getElementById("manuscriptTextarea") as HTMLTextAreaElement;
-    const caption = prompt("Enter figure caption / alt text:", defaultAlt) || defaultAlt;
-    const imageMarkdown = `\n\n![${caption}](${url})\n*Figure: ${caption}*\n\n`;
-
-    if (!textarea) {
-      setContent((prev) => prev + imageMarkdown);
-      return;
-    }
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const nextContent = content.substring(0, start) + imageMarkdown + content.substring(end);
-    setContent(nextContent);
-  };
-
   const handleSave = (newStatus?: Blog["status"]) => {
     if (!title.trim()) {
       alert("Please provide a title for the manuscript.");
@@ -137,7 +107,8 @@ function EditorContent() {
       readTime: readTime.trim() || "5 min read",
       thumbnail: thumbnail.trim(),
       excerpt: excerpt.trim() || title + " — Technical dispatch.",
-      content: content.trim() || "Manuscript text under editorial preparation.",
+      content: JSON.stringify(contentJson),
+      contentJson: contentJson as Record<string, unknown>,
       status: targetStatus,
     });
 
@@ -152,17 +123,6 @@ function EditorContent() {
     setTimeout(() => {
       router.push("/profile");
     }, 1200);
-  };
-
-  const insertSnippet = (prefix: string, suffix: string = "") => {
-    const textarea = document.getElementById("manuscriptTextarea") as HTMLTextAreaElement;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = content.substring(start, end);
-    const replacement = `${prefix}${selected || "text"}${suffix}`;
-    const nextContent = content.substring(0, start) + replacement + content.substring(end);
-    setContent(nextContent);
   };
 
   return (
@@ -250,26 +210,26 @@ function EditorContent() {
 
           <div>
             <label className="block font-bold uppercase mb-1 text-[var(--text-muted)]">
-              KEYWORDS / TAGS (COMMA SEPARATED):
+              TAGS (COMMA SEPARATED):
             </label>
             <input
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              placeholder="linux, ebpf, observability"
-              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none"
+              placeholder="eBPF, Kernel, Observability"
+              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold text-[var(--text-main)] focus:outline-none"
             />
           </div>
 
           <div>
             <label className="block font-bold uppercase mb-1 text-[var(--text-muted)]">
-              READ TIME ESTIMATE:
+              ESTIMATED READ TIME:
             </label>
             <input
               type="text"
               value={readTime}
               onChange={(e) => setReadTime(e.target.value)}
-              placeholder="7 min read"
+              placeholder="5 min read"
               className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none"
             />
           </div>
@@ -338,7 +298,7 @@ function EditorContent() {
 
           <div>
             <label className="block font-bold uppercase mb-1 text-[var(--text-muted)]">
-              STATUS OVERRIDE:
+              INITIAL PUBLISHING STATUS:
             </label>
             <select
               value={status}
@@ -348,7 +308,6 @@ function EditorContent() {
               <option value="DRAFT">DRAFT</option>
               <option value="UNDER_REVIEW">UNDER REVIEW</option>
               <option value="PUBLISHED">PUBLISHED</option>
-              <option value="ARCHIVED">ARCHIVED</option>
             </select>
           </div>
         </div>
@@ -368,69 +327,13 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* View Mode Switcher and Quick Formatting Tools */}
+      {/* View Mode Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-[var(--border-black)] pb-2 font-mono text-xs">
-        {/* Quick markdown snippet tools */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-bold uppercase text-[var(--text-muted)] mr-1">SNIPPETS:</span>
-          <button
-            type="button"
-            onClick={() => insertSnippet("### ")}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
-          >
-            H3
-          </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet("**", "**")}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
-          >
-            BOLD
-          </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet("*", "*")}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
-          >
-            ITALIC
-          </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet("```rust\n", "\n```")}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
-          >
-            CODE BLOCK
-          </button>
-          <button
-            type="button"
-            onClick={() => insertSnippet("> *\"", "\"*")}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
-          >
-            PULL QUOTE
-          </button>
-
-          {/* Body Figure Image File Upload Trigger */}
-          <input
-            type="file"
-            ref={bodyImageInputRef}
-            accept="image/*"
-            onChange={handleBodyImageUpload}
-            className="hidden"
-          />
-          <button
-            type="button"
-            disabled={isUploadingBodyImage}
-            onClick={() => bodyImageInputRef.current?.click()}
-            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] transition-colors cursor-pointer inline-flex items-center gap-1"
-            title="Upload and insert an image file into the manuscript body"
-          >
-            {isUploadingBodyImage ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <ImageIcon className="w-3 h-3" />
-            )}
-            <span>{isUploadingBodyImage ? "UPLOADING..." : "[ ⇪ INSERT FIGURE IMAGE ]"}</span>
-          </button>
+        <div className="flex items-center gap-2">
+          <span className="font-bold uppercase text-[var(--text-muted)]">EDITOR ENGINE:</span>
+          <span className="px-2 py-0.5 bg-[var(--text-main)] text-[var(--bg-canvas)] font-black text-[11px]">
+            TIPTAP PROSE WYSIWYG
+          </span>
         </div>
 
         {/* Tab view modes */}
@@ -444,7 +347,7 @@ function EditorContent() {
                 : "bg-[var(--bg-card)] text-[var(--text-main)]"
             }`}
           >
-            SOURCE
+            COMPOSER
           </button>
           <button
             type="button"
@@ -468,80 +371,83 @@ function EditorContent() {
           >
             LIVE PROOF
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("json")}
+            className={`px-3 py-1 font-mono text-xs font-black uppercase cursor-pointer ${
+              activeTab === "json"
+                ? "bg-[var(--text-main)] text-[var(--bg-canvas)]"
+                : "bg-[var(--bg-card)] text-[var(--text-main)]"
+            }`}
+          >
+            JSON DOC
+          </button>
         </div>
       </div>
 
-      {/* Main Editing / Preview Canvas */}
-      <div className="border-4 border-[var(--border-black)] bg-[var(--bg-card)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y-4 md:divide-y-0 md:divide-x-4 divide-[var(--border-black)] min-h-[500px]">
-          {/* Left: Source Textarea */}
-          {(activeTab === "edit" || activeTab === "split") && (
-            <div className={`p-4 flex flex-col ${activeTab === "edit" ? "md:col-span-2" : ""}`}>
-              <div className="font-mono text-xs font-bold uppercase text-[var(--text-muted)] pb-2 border-b border-[var(--border-subtle)] mb-2 flex items-center justify-between">
-                <span>MANUSCRIPT MARKDOWN BODY</span>
-                <span>{content.split(/\s+/).filter(Boolean).length} WORDS</span>
-              </div>
-              <textarea
-                id="manuscriptTextarea"
-                rows={20}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Write your technical analysis, proof, or architecture dispatch here in Markdown..."
-                className="w-full flex-1 p-3 font-mono text-sm leading-relaxed border-none bg-transparent text-[var(--text-main)] focus:outline-none resize-none"
+      {/* Main TipTap Editing / Preview Canvas */}
+      {activeTab === "edit" && (
+        <TipTapEditor
+          initialContent={contentJson}
+          onChange={handleEditorChange}
+        />
+      )}
+
+      {activeTab === "split" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div className="flex flex-col">
+            <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)] mb-2 flex items-center justify-between">
+              <span>WYSIWYG TIPTAP COMPOSER</span>
+              <span>LIVE EDIT</span>
+            </div>
+            <TipTapEditor
+              initialContent={contentJson}
+              onChange={handleEditorChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)] mb-2 flex items-center justify-between">
+              <span>LIVE BROADSHEET PROOF PREVIEW</span>
+              <span>SYNCHRONIZED</span>
+            </div>
+            <div className="max-h-[850px] overflow-y-auto">
+              <TipTapPreview
+                title={title}
+                category={category}
+                readTime={readTime}
+                thumbnail={thumbnail}
+                excerpt={excerpt}
+                tags={tags.split(",").map((t) => t.trim()).filter(Boolean)}
+                status={status}
+                contentJson={contentJson}
+                rawContent={contentText}
               />
             </div>
-          )}
-
-          {/* Right: Live Broadsheet Proof Preview */}
-          {(activeTab === "preview" || activeTab === "split") && (
-            <div
-              className={`p-6 bg-[var(--bg-canvas)] overflow-y-auto max-h-[700px] space-y-4 ${
-                activeTab === "preview" ? "md:col-span-2" : ""
-              }`}
-            >
-              <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)] pb-2 border-b-2 border-[var(--border-black)] flex items-center justify-between">
-                <span>BROADSHEET LETTERPRESS PROOF</span>
-                <span>PROOF VER: DRAFT</span>
-              </div>
-
-              {title && (
-                <h2 className="font-heading text-3xl sm:text-4xl font-black uppercase leading-tight text-[var(--text-main)]">
-                  {title}
-                </h2>
-              )}
-
-              {excerpt && (
-                <p className="font-serif text-base italic border-l-3 border-[var(--border-black)] pl-3 text-[var(--text-muted)]">
-                  {excerpt}
-                </p>
-              )}
-
-              {thumbnail && (
-                <div className="border-2 border-[var(--border-black)] h-44 overflow-hidden relative">
-                  <img
-                    src={thumbnail}
-                    alt="Preview"
-                    className="w-full h-full object-cover filter grayscale"
-                  />
-                  <span className="absolute bottom-1 right-1 font-mono text-[9px] bg-[var(--bg-card)] px-1 border border-[var(--border-black)]">
-                    FIGURE 1.0 PROOF
-                  </span>
-                </div>
-              )}
-
-              <div className="font-serif text-sm leading-relaxed text-[var(--text-body)] space-y-4 whitespace-pre-line pt-2">
-                {content ? (
-                  content
-                ) : (
-                  <span className="font-mono text-xs text-[var(--text-muted)] uppercase">
-                    No body content written yet...
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {activeTab === "preview" && (
+        <TipTapPreview
+          title={title}
+          category={category}
+          readTime={readTime}
+          thumbnail={thumbnail}
+          excerpt={excerpt}
+          tags={tags.split(",").map((t) => t.trim()).filter(Boolean)}
+          status={status}
+          contentJson={contentJson}
+          rawContent={contentText}
+        />
+      )}
+
+      {activeTab === "json" && (
+        <TipTapJsonViewer
+          jsonDoc={contentJson}
+          blogTitle={title}
+        />
+      )}
     </div>
   );
 }
