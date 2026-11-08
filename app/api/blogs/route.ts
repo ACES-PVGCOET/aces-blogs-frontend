@@ -25,6 +25,17 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    // Ensure content is stored in JSON format for the database
+    let contentString = "";
+    if (typeof body.content === "string") {
+      contentString = body.content;
+    } else if (body.content && typeof body.content === "object") {
+      contentString = JSON.stringify(body.content);
+    } else if (body.contentJson) {
+      contentString = JSON.stringify(body.contentJson);
+    }
+
     const newBlog: Blog = {
       id: "blog-" + Date.now(),
       slug:
@@ -33,22 +44,19 @@ export async function POST(req: NextRequest) {
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-"),
       title: body.title || "Untitled Dispatch",
-      thumbnail:
-        body.thumbnail ||
-        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
-      author: body.author || "writer-101",
-      authorName: body.authorName || "Aarav Sharma",
-      authorHandle: body.authorHandle || "@aarav_writes",
-      authorAvatar:
-        body.authorAvatar ||
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+      thumbnail: body.thumbnail || "",
+      author: body.author || "contributor",
+      authorName: body.authorName || "ACES Contributor",
+      authorHandle: body.authorHandle || "@aces_contributor",
+      authorAvatar: body.authorAvatar || "",
       reviewer: body.reviewer || null,
       status: body.status || "DRAFT",
       category: body.category || "General",
       tags: Array.isArray(body.tags) ? body.tags : ["systems"],
       readTime: body.readTime || "5 min read",
       readsCount: 0,
-      content: body.content || "",
+      content: contentString || "{}",
+      contentJson: body.contentJson || (contentString.startsWith("{") ? JSON.parse(contentString) : null),
       excerpt: body.excerpt || body.title || "",
       latestRevisionVersion: 1,
       latestPublishedVersion: body.status === "PUBLISHED" ? 1 : 0,

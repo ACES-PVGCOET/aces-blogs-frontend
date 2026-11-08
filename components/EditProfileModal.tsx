@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { WriterProfile } from "@/lib/types";
+import { apiClient } from "@/lib/api-client";
+import { ImageIcon, Loader2, X } from "lucide-react";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -21,8 +23,50 @@ export default function EditProfileModal({
   const [profileImg, setProfileImg] = useState(profile.profileImg);
   const [bio, setBio] = useState(profile.bio);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image exceeds 5MB limit.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const res = await apiClient.uploads.image(file);
+      if (res?.url) {
+        setProfileImg(res.url);
+        return;
+      }
+    } catch (err: unknown) {
+      console.warn("Backend image upload failed, falling back to local file reader:", err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+
+    // Fallback to local FileReader data URL
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const result = loadEvt.target?.result as string;
+      if (result) {
+        setProfileImg(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = () => {
+    setProfileImg("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,26 +86,29 @@ export default function EditProfileModal({
       localStorage.setItem("aces_user_profile", JSON.stringify(updated));
     } catch {}
 
-    // 2. Sync to API if available
+    // 2. Sync to Backend API
     try {
-      await fetch(`/api/profile/${profile.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: updated.name,
-          username: updated.username,
-          avatarUrl: updated.profileImg,
-          bio: updated.bio,
-        }),
+      await apiClient.users.updateMe({
+        bio: updated.bio,
+        profileImg: updated.profileImg,
       });
     } catch (err) {
-      console.warn("Backend sync failed, stored in localStorage:", err);
+      console.warn("Backend user profile sync notice:", err);
     }
 
     setIsSaving(false);
     onSave(updated);
     onClose();
   };
+
+  const initials = name
+    ? name
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "AC";
 
   return (
     <div
@@ -73,11 +120,11 @@ export default function EditProfileModal({
       <div className="snappy-modal-pane" style={{ maxWidth: "580px" }}>
         {/* Head */}
         <div className="snappy-modal-head">
-          <span className="snappy-modal-title">AUTHOR CREDENTIALS DESK</span>
+          <span className="snappy-modal-title">EDIT AUTHOR CREDENTIALS</span>
           <button
             type="button"
             onClick={onClose}
-            className="font-mono text-sm font-black px-2 py-1 border-2 border-[var(--border-black)] bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)]"
+            className="font-mono text-sm font-black px-2 py-1 border-2 border-[var(--border-black)] bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
           >
             [ ✕ ]
           </button>
@@ -86,29 +133,66 @@ export default function EditProfileModal({
         {/* Content */}
         <form onSubmit={handleSubmit} className="snappy-modal-content space-y-4">
           <div className="flex gap-4 items-center p-3 border-2 border-[var(--border-black)] bg-[var(--bg-muted)]">
-            <div className="w-16 h-16 border-2 border-[var(--border-black)] bg-[var(--bg-card)] overflow-hidden flex-shrink-0">
+            <div className="w-16 h-16 border-2 border-[var(--border-black)] bg-[var(--bg-card)] overflow-hidden flex-shrink-0 relative flex items-center justify-center">
               {profileImg ? (
                 <img
                   src={profileImg}
                   alt="Preview"
                   className="w-full h-full object-cover filter grayscale"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+                  onError={() => {
+                    setProfileImg("");
                   }}
                 />
               ) : (
-                <span className="w-full h-full flex items-center justify-center font-heading text-xl">
-                  {name.slice(0, 2).toUpperCase()}
+                <span className="font-heading text-xl font-black text-[var(--text-main)] select-none">
+                  {initials}
                 </span>
               )}
             </div>
-            <div className="flex-1 font-mono text-xs">
+            <div className="flex-1 font-mono text-xs space-y-1.5">
               <div className="font-bold uppercase text-[var(--text-main)]">
-                HALFTONE PRESS PORTRAIT PREVIEW
+                AUTHOR PORTRAIT FILE
               </div>
               <div className="text-[var(--text-muted)] text-[11px]">
-                133-LPI letterpress screen applied to author credentials
+                Upload image file from device (Max 5MB)
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageFileChange}
+                accept="image/*"
+                className="hidden"
+              />
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={isUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-2.5 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] text-[10px] font-bold uppercase hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  {isUploading ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <ImageIcon className="w-3 h-3" />
+                  )}
+                  <span>
+                    {isUploading
+                      ? "UPLOADING..."
+                      : profileImg
+                      ? "[ ⇪ CHANGE IMAGE ]"
+                      : "[ ⇪ UPLOAD PORTRAIT ]"}
+                  </span>
+                </button>
+                {profileImg && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="px-2 py-1 border border-red-500 text-red-600 dark:text-red-400 bg-[var(--bg-card)] text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>REMOVE</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -141,27 +225,13 @@ export default function EditProfileModal({
 
           <div>
             <label className="block font-mono text-xs font-bold uppercase mb-1 text-[var(--text-main)]">
-              Photo URL (Halftone Portrait):
-            </label>
-            <input
-              type="url"
-              required
-              value={profileImg}
-              onChange={(e) => setProfileImg(e.target.value)}
-              placeholder="https://..."
-              className="w-full h-10 px-3 font-mono text-sm border-2 border-[var(--border-black)] bg-[var(--bg-card)] text-[var(--text-main)] focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block font-mono text-xs font-bold uppercase mb-1 text-[var(--text-main)]">
-              Investigative Beat & Biography:
+              Biography &amp; Research Beat:
             </label>
             <textarea
               rows={4}
-              required
               value={bio}
               onChange={(e) => setBio(e.target.value)}
+              placeholder="Describe your engineering focus, research beat or interests..."
               className="w-full p-3 font-serif text-sm border-2 border-[var(--border-black)] bg-[var(--bg-card)] text-[var(--text-main)] focus:outline-none resize-none"
             />
           </div>
@@ -171,14 +241,14 @@ export default function EditProfileModal({
             <button
               type="button"
               onClick={onClose}
-              className="btn-broadsheet"
+              className="btn-broadsheet cursor-pointer"
             >
               [ ✕ CANCEL ]
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="btn-broadsheet btn-broadsheet-primary"
+              className="btn-broadsheet btn-broadsheet-primary cursor-pointer"
             >
               {isSaving ? "SAVING..." : "[ ✔ UPDATE CREDENTIALS ]"}
             </button>

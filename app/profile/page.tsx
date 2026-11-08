@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function ProfilePage() {
-  return <WriterProfileView userId="writer-101" />;
+  return <WriterProfileView />;
 }

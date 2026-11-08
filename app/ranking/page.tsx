@@ -7,7 +7,7 @@ import { mockTeams } from "@/lib/mock-data";
 
 export default function RankingPage() {
   const [teams, setTeams] = useState<Team[]>(mockTeams);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/ranking")
@@ -35,7 +35,7 @@ export default function RankingPage() {
           Campus Engineering Leaderboard
         </h1>
         <p className="font-serif text-sm text-[var(--text-muted)] mt-2 max-w-2xl">
-          Live technical rankings for engineering pods, research cells, and systems guilds based on
+          Technical rankings for engineering pods, research cells, and systems guilds based on
           verified dispatches, peer code audits, and compiler contributions.
         </p>
       </section>
@@ -43,7 +43,7 @@ export default function RankingPage() {
       {/* Podium for Top 3 */}
       <section className="space-y-4">
         <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)]">
-          ★ THE PODIUM DIVISIONS (RANKS 1 TO 3)
+          THE PODIUM DIVISIONS (RANKS 1 TO 3)
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
@@ -51,10 +51,9 @@ export default function RankingPage() {
           {topThree[1] && (
             <div className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] p-6 flex flex-col justify-between order-2 md:order-1 h-80">
               <div className="flex items-center justify-between font-mono text-xs font-black uppercase">
-                <span className="px-2 py-0.5 border border-[var(--border-black)] bg-[var(--bg-muted)]">
+                <span className="px-2 py-0.5 border border-[var(--border-black)] bg-[var(--bg-muted)] text-[var(--text-main)]">
                   RANK 2 · SILVER
                 </span>
-                <span>🔥 {topThree[1].streakDays}D STREAK</span>
               </div>
               <div className="text-center py-4">
                 <span className="font-heading text-6xl font-black text-[var(--text-main)] block">
@@ -76,14 +75,10 @@ export default function RankingPage() {
           {/* Rank 1 (Gold) */}
           {topThree[0] && (
             <div className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] p-6 flex flex-col justify-between order-1 md:order-2 h-96 relative shadow-[8px_8px_0px_var(--border-black)]">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[var(--text-main)] text-[var(--bg-canvas)] font-mono text-xs font-black uppercase tracking-widest border border-[var(--border-black)]">
-                ★ 1ST PLACE CHAMPION ★
-              </div>
               <div className="flex items-center justify-between font-mono text-xs font-black uppercase mt-2">
                 <span className="px-2 py-0.5 bg-[var(--text-main)] text-[var(--bg-canvas)]">
                   RANK 1 · GOLD
                 </span>
-                <span>🔥 {topThree[0].streakDays}D STREAK</span>
               </div>
               <div className="text-center py-4">
                 <span className="font-heading text-7xl font-black text-[var(--text-main)] block">
@@ -106,10 +101,9 @@ export default function RankingPage() {
           {topThree[2] && (
             <div className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] p-6 flex flex-col justify-between order-3 md:order-3 h-72">
               <div className="flex items-center justify-between font-mono text-xs font-black uppercase">
-                <span className="px-2 py-0.5 border border-[var(--border-black)] bg-[var(--bg-muted)]">
+                <span className="px-2 py-0.5 border border-[var(--border-black)] bg-[var(--bg-muted)] text-[var(--text-main)]">
                   RANK 3 · BRONZE
                 </span>
-                <span>🔥 {topThree[2].streakDays}D STREAK</span>
               </div>
               <div className="text-center py-4">
                 <span className="font-heading text-5xl font-black text-[var(--text-main)] block">
@@ -133,7 +127,7 @@ export default function RankingPage() {
       {/* Ranks 4 to 8 Table */}
       <section className="space-y-4">
         <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)]">
-          ■ CAMPUS STANDINGS (RANKS 4 TO {teams.length})
+          CAMPUS STANDINGS (RANKS 4 TO {teams.length})
         </div>
 
         <div className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] overflow-x-auto">
@@ -142,8 +136,6 @@ export default function RankingPage() {
               <tr className="border-b-3 border-[var(--border-black)] bg-[var(--bg-muted)]">
                 <th className="p-3 w-16 text-center font-black">RANK</th>
                 <th className="p-3 font-black">ENGINEERING DIVISION / RESEARCH POD</th>
-                <th className="p-3 font-black text-center">STREAK</th>
-                <th className="p-3 font-black text-center">EMBLEM</th>
                 <th className="p-3 font-black text-right">TOTAL POINTS</th>
               </tr>
             </thead>
@@ -155,14 +147,6 @@ export default function RankingPage() {
                   </td>
                   <td className="p-3 font-bold text-[var(--text-main)]">
                     {team.name}
-                  </td>
-                  <td className="p-3 text-center font-bold text-[var(--text-muted)]">
-                    {team.streakDays > 0 ? `🔥 ${team.streakDays} DAYS` : "—"}
-                  </td>
-                  <td className="p-3 text-center">
-                    <span className="px-2 py-0.5 border border-[var(--border-black)] text-[10px] font-bold">
-                      {team.emblemVariant.toUpperCase()}
-                    </span>
                   </td>
                   <td className="p-3 text-right font-black text-sm text-[var(--text-main)]">
                     {team.points.toLocaleString()} PTS
@@ -180,9 +164,8 @@ export default function RankingPage() {
           ACES Ranking Scoring Protocol
         </h4>
         <p className="font-serif text-xs leading-relaxed text-[var(--text-muted)]">
-          Points are awarded dynamically for published research dispatches (+500 pts), passing faculty
-          peer accreditation (+300 pts), maintaining multi-day research commit streaks (+50 pts/day),
-          and conducting architectural reviews on fellow student submissions (+150 pts).
+          Points are awarded for published research dispatches, passing faculty
+          peer accreditation, and conducting architectural reviews on student submissions.
         </p>
         <div className="pt-2">
           <Link href="/editor" className="btn-broadsheet text-xs">

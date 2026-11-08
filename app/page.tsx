@@ -1,27 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockBlogs, mockTeams } from "@/lib/mock-data";
+import { fetchPublicBlogs } from "@/lib/blog-service";
+import { Blog } from "@/lib/types";
 
 export default function HomePage() {
-  const sampleBlogs = mockBlogs.filter((b) => b.status === "PUBLISHED").slice(0, 3);
+  const [sampleBlogs, setSampleBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetchPublicBlogs({ limit: 6 })
+      .then((blogs) => {
+        if (blogs && blogs.length > 0) {
+          setSampleBlogs(blogs.slice(0, 3));
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="space-y-16 py-2">
       {/* 1. Hero Section: Project Overview & Main CTAs */}
       <section className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] p-6 sm:p-10 lg:p-12 relative overflow-hidden shadow-[8px_8px_0px_var(--border-black)]">
-        {/* Registration mark */}
-        <span className="absolute top-3 right-3 font-mono text-xs font-black text-[var(--text-muted)] pointer-events-none select-none">
-          ⊕ ✛ FOLIO 2026
-        </span>
-
         <div className="max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 font-mono text-xs font-black uppercase px-3 py-1 bg-[var(--text-main)] text-[var(--bg-canvas)] border border-[var(--border-black)]">
-            <span>★</span>
-            <span>OFFICIAL TECHNICAL BLOGGING PLATFORM · ACES PVGCOET</span>
-          </div>
-
           <h1 className="font-heading text-4xl sm:text-6xl lg:text-7xl font-black uppercase leading-none tracking-tight text-[var(--text-main)]">
             The Technical Chronicle &amp; Engineering Dispatches of PVGCOET
           </h1>
@@ -29,7 +33,7 @@ export default function HomePage() {
           <p className="font-serif text-base sm:text-xl text-[var(--text-body)] leading-relaxed max-w-3xl">
             <strong>Blog Aces</strong> is the peer-reviewed publishing platform and creator workbench
             crafted by the Association of Computer Engineering Students (ACES). Devoted to deep systems
-            breakdowns, Linux kernel tracing, compiler truths, distributed consensus, and faculty-accredited research.
+            breakdowns, Linux kernel tracing, compiler truths, distributed consensus, and technical research.
           </p>
 
           {/* Primary Action Buttons */}
@@ -58,42 +62,6 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-
-        {/* Live Project Vital Statistics Banner */}
-        <div className="mt-10 pt-6 border-t-3 border-[var(--border-black)] grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
-          <div className="p-3 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] text-center">
-            <span className="font-heading text-3xl sm:text-4xl font-black text-[var(--text-main)] block">
-              100%
-            </span>
-            <span className="text-[11px] font-bold uppercase text-[var(--text-muted)]">
-              Faculty Accredited
-            </span>
-          </div>
-          <div className="p-3 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] text-center">
-            <span className="font-heading text-3xl sm:text-4xl font-black text-[var(--text-main)] block">
-              7+
-            </span>
-            <span className="text-[11px] font-bold uppercase text-[var(--text-muted)]">
-              Research Beats
-            </span>
-          </div>
-          <div className="p-3 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] text-center">
-            <span className="font-heading text-3xl sm:text-4xl font-black text-[var(--text-main)] block">
-              35K+
-            </span>
-            <span className="text-[11px] font-bold uppercase text-[var(--text-muted)]">
-              Dispatches Read
-            </span>
-          </div>
-          <div className="p-3 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] text-center">
-            <span className="font-heading text-3xl sm:text-4xl font-black text-[var(--text-main)] block">
-              &lt;4MS
-            </span>
-            <span className="text-[11px] font-bold uppercase text-[var(--text-muted)]">
-              Broadsheet Latency
-            </span>
-          </div>
-        </div>
       </section>
 
       {/* 2. Visual Platform Showcase: The Broadsheet Reading Experience */}
@@ -115,66 +83,93 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* 3 Featured Visual Showcase Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {sampleBlogs.map((b) => (
-            <div
-              key={b.id}
-              className="border-3 border-[var(--border-black)] bg-[var(--bg-card)] flex flex-col justify-between hover:shadow-[6px_6px_0px_var(--border-black)] transition-all"
-            >
-              {/* Thumbnail with Halftone and Tag */}
-              <div className="h-44 border-b-3 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden">
-                <img
-                  src={b.thumbnail}
-                  alt={b.title}
-                  className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-300"
-                />
-                <span className="absolute top-2 left-2 px-2 py-0.5 bg-[var(--text-main)] text-[var(--bg-canvas)] font-mono text-[10px] font-bold uppercase">
-                  {b.category}
-                </span>
-                <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-[var(--bg-card)] font-mono text-[10px] font-bold border border-[var(--border-black)] text-[var(--text-main)] uppercase">
-                  {b.readTime}
-                </span>
-              </div>
-
-              {/* Title & Excerpt */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                <div className="space-y-2">
-                  <Link
-                    href={`/blog/${b.id}`}
-                    className="font-heading text-xl font-black uppercase leading-tight hover:underline text-[var(--text-main)] block line-clamp-2"
-                  >
-                    {b.title}
-                  </Link>
-                  <p className="font-serif text-xs text-[var(--text-muted)] line-clamp-3">
-                    {b.excerpt}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t-2 border-[var(--border-black)] flex items-center justify-between font-mono text-xs uppercase font-bold">
-                  <span className="text-[var(--text-muted)] text-[11px]">
-                    BY {b.authorName?.toUpperCase() || "AARAV SHARMA"}
+        {/* Featured Visual Showcase Cards */}
+        {loading && sampleBlogs.length === 0 ? (
+          <div className="border-2 border-dashed border-[var(--border-black)] p-12 text-center bg-[var(--bg-muted)] font-mono text-xs uppercase">
+            LOADING FEATURED DISPATCHES...
+          </div>
+        ) : sampleBlogs.length === 0 ? (
+          <div className="border-2 border-dashed border-[var(--border-black)] p-12 text-center bg-[var(--bg-muted)] space-y-3 font-mono text-xs uppercase">
+            <div className="font-bold text-base">NO DISPATCHES PUBLISHED YET</div>
+            <p className="text-[var(--text-muted)] font-serif lowercase">
+              be the first author to publish a technical dispatch on the gazette.
+            </p>
+            <Link href="/editor" className="btn-broadsheet btn-broadsheet-primary mt-2 inline-block">
+              ➔ COMPOSE FIRST DISPATCH
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {sampleBlogs.map((b) => (
+              <div
+                key={b.id}
+                className="border-3 border-[var(--border-black)] bg-[var(--bg-card)] flex flex-col justify-between hover:shadow-[6px_6px_0px_var(--border-black)] transition-all"
+              >
+                {/* Thumbnail */}
+                <div className="h-44 border-b-3 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden flex items-center justify-center">
+                  {b.thumbnail ? (
+                    <img
+                      src={b.thumbnail}
+                      alt={b.title}
+                      className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <span className="font-mono text-xs font-bold uppercase text-[var(--text-muted)]">
+                      [{b.category}]
+                    </span>
+                  )}
+                  <span className="absolute top-2 left-2 px-2 py-0.5 bg-[var(--text-main)] text-[var(--bg-canvas)] font-mono text-[10px] font-bold uppercase">
+                    {b.category}
                   </span>
-                  <Link
-                    href={`/blog/${b.id}`}
-                    className="text-[var(--text-main)] font-black hover:underline"
-                  >
-                    [ READ ➔ ]
-                  </Link>
+                  <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-[var(--bg-card)] font-mono text-[10px] font-bold border border-[var(--border-black)] text-[var(--text-main)] uppercase">
+                    {b.readTime}
+                  </span>
+                </div>
+
+                {/* Title & Excerpt */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-2">
+                    <Link
+                      href={`/blog/${b.slug || b.id}`}
+                      className="font-heading text-xl font-black uppercase leading-tight hover:underline text-[var(--text-main)] block line-clamp-2"
+                    >
+                      {b.title}
+                    </Link>
+                    {b.excerpt && (
+                      <p className="font-serif text-xs text-[var(--text-muted)] line-clamp-3">
+                        {b.excerpt}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t-2 border-[var(--border-black)] flex items-center justify-between font-mono text-xs uppercase font-bold">
+                    <span className="text-[var(--text-muted)] text-[11px] truncate max-w-[160px]">
+                      BY {b.authorName?.toUpperCase() || "ACES CONTRIBUTOR"}
+                    </span>
+                    <Link
+                      href={`/blog/${b.slug || b.id}`}
+                      className="text-[var(--text-main)] font-black hover:underline"
+                    >
+                      [ READ ➔ ]
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Global Feed Redirection Banner */}
         <div className="border-3 border-[var(--border-black)] bg-[var(--bg-muted)] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1">
             <h3 className="font-heading text-2xl font-black uppercase text-[var(--text-main)]">
-              Looking for Kernel, Rust, and Consensus Articles?
+              Looking for Kernel, Systems, and Distributed Articles?
             </h3>
             <p className="font-serif text-xs text-[var(--text-muted)]">
-              Filter by research category, search by technical keywords, and sort dispatches in our comprehensive feed.
+              Filter by research category, search by technical keywords, and explore dispatches in our comprehensive feed.
             </p>
           </div>
           <Link
@@ -196,7 +191,7 @@ export default function HomePage() {
             An Academic Publishing Engine
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[var(--text-muted)]">
-            Built specifically to solve low-signal technical writing with peer scrutiny and letterpress craftsmanship.
+            Built specifically for high-signal technical writing with peer review and letterpress craftsmanship.
           </p>
         </div>
 
@@ -225,10 +220,10 @@ export default function HomePage() {
             <div className="space-y-2">
               <span className="font-mono text-2xl font-black text-[var(--text-main)]">02 /</span>
               <h3 className="font-heading text-xl font-black uppercase text-[var(--text-main)]">
-                Author Fellow Passes
+                Author Workspaces
               </h3>
               <p className="font-serif text-xs leading-relaxed text-[var(--text-muted)]">
-                Individual profile workspaces for student fellows, featuring accredited accolades, biographical beats, and publication stats.
+                Individual profile workspaces for student fellows, featuring biographical beats, dispatches ledger, and editorial pipeline.
               </p>
             </div>
             <Link
@@ -244,15 +239,18 @@ export default function HomePage() {
             <div className="space-y-2">
               <span className="font-mono text-2xl font-black text-[var(--text-main)]">03 /</span>
               <h3 className="font-heading text-xl font-black uppercase text-[var(--text-main)]">
-                Faculty Peer Review
+                Peer Review
               </h3>
               <p className="font-serif text-xs leading-relaxed text-[var(--text-muted)]">
-                Every dispatch is evaluated by senior faculty reviewers (Dr. A. Patil, Prof. S. Kulkarni) before public accreditation.
+                Every technical dispatch is evaluated by editorial committee members before being certified for public release.
               </p>
             </div>
-            <div className="font-mono text-xs font-black uppercase text-[var(--text-muted)] pt-2 border-t border-[var(--border-black)]">
-              [✔] Certified
-            </div>
+            <Link
+              href="/feed"
+              className="font-mono text-xs font-black uppercase hover:underline text-[var(--text-main)] pt-2 border-t border-[var(--border-black)] block"
+            >
+              Review Pipeline ➔
+            </Link>
           </div>
 
           {/* Pillar 4 */}
@@ -283,24 +281,14 @@ export default function HomePage() {
             CAMPUS TECHNICAL LEADERBOARD
           </div>
           <h2 className="font-heading text-2xl sm:text-3xl font-black uppercase text-[var(--text-main)]">
-            Track Your Engineering Pod&apos;s Research Points
+            Track Engineering Pod Points &amp; Research Standings
           </h2>
           <p className="font-serif text-xs text-[var(--text-muted)] leading-relaxed">
-            Pods like Phoenix Systems Lab, Turing Compilers Group, and Consensus &amp; Protocols Cell earn points for verified code reviews, publication streaks, and technical dispatches.
+            Engineering pods earn points for verified code reviews, publication streaks, and technical dispatches.
           </p>
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="hidden sm:flex items-center gap-2 font-mono text-xs">
-            {mockTeams.slice(0, 2).map((t, idx) => (
-              <span
-                key={t.id}
-                className="px-3 py-1 border border-[var(--border-black)] bg-[var(--bg-muted)] font-bold uppercase"
-              >
-                #{idx + 1} {t.name.split(" ")[0]} ({t.points}P)
-              </span>
-            ))}
-          </div>
           <Link href="/ranking" className="btn-broadsheet whitespace-nowrap cursor-pointer">
             VIEW FULL STANDINGS ➔
           </Link>

@@ -126,7 +126,7 @@ export async function getProfile(userId: string): Promise<User | null> {
   // ── Mock fallback ──────────────────────────────────────────────────────────
   const { mockUser, mockUserWithBadges } = await import("./mock-data");
 
-  if (userId === "user-1" || userId === "ana" || userId === "default") {
+  if (userId === "user-1" || userId === "default") {
     return mockUser;
   }
   if (userId === "user-2" || userId === "with-badges") {

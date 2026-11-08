@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getBlogByIdOrSlug, saveBlog } from "@/lib/blog-service";
 import { Blog } from "@/lib/types";
+import { apiClient } from "@/lib/api-client";
+import { ImageIcon, Loader2, X } from "lucide-react";
 
 function EditorContent() {
   const router = useRouter();
@@ -14,19 +16,106 @@ function EditorContent() {
   const existing = editId ? getBlogByIdOrSlug(editId) : null;
 
   const [title, setTitle] = useState(() => existing?.title || "");
-  const [category, setCategory] = useState(() => existing?.category || "Systems & Compilers");
-  const [tags, setTags] = useState(() => existing?.tags.join(", ") || "rust, systems, compilers");
-  const [readTime, setReadTime] = useState(() => existing?.readTime || "6 min read");
-  const [thumbnail, setThumbnail] = useState(
-    () =>
-      existing?.thumbnail ||
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
-  );
+  const [category, setCategory] = useState(() => existing?.category || "");
+  const [tags, setTags] = useState(() => existing?.tags.join(", ") || "");
+  const [readTime, setReadTime] = useState(() => existing?.readTime || "5 min read");
+  const [thumbnail, setThumbnail] = useState(() => existing?.thumbnail || "");
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [isUploadingBodyImage, setIsUploadingBodyImage] = useState(false);
   const [excerpt, setExcerpt] = useState(() => existing?.excerpt || "");
   const [content, setContent] = useState(() => existing?.content || "");
   const [status, setStatus] = useState<Blog["status"]>(() => existing?.status || "DRAFT");
   const [activeTab, setActiveTab] = useState<"edit" | "preview" | "split">("split");
   const [message, setMessage] = useState<string | null>(null);
+
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const bodyImageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image exceeds 5MB limit.");
+      return;
+    }
+
+    setIsUploadingThumbnail(true);
+    try {
+      const res = await apiClient.uploads.image(file);
+      if (res?.url) {
+        setThumbnail(res.url);
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend thumbnail upload failed, falling back to local file reader:", err);
+    } finally {
+      setIsUploadingThumbnail(false);
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
+    }
+
+    // Fallback to FileReader data URL
+    const reader = new FileReader();
+    reader.onload = (loadEvt) => {
+      const result = loadEvt.target?.result as string;
+      if (result) setThumbnail(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleBodyImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image exceeds 5MB limit.");
+      return;
+    }
+
+    setIsUploadingBodyImage(true);
+    let finalUrl = "";
+    try {
+      const res = await apiClient.uploads.image(file);
+      if (res?.url) {
+        finalUrl = res.url;
+      }
+    } catch (err) {
+      console.warn("Backend body image upload failed, falling back to local file reader:", err);
+    } finally {
+      setIsUploadingBodyImage(false);
+      if (bodyImageInputRef.current) bodyImageInputRef.current.value = "";
+    }
+
+    if (!finalUrl) {
+      const reader = new FileReader();
+      reader.onload = (loadEvt) => {
+        const result = loadEvt.target?.result as string;
+        if (result) {
+          insertImageMarkdown(result, file.name.replace(/\.[^.]+$/, ""));
+        }
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    insertImageMarkdown(finalUrl, file.name.replace(/\.[^.]+$/, ""));
+  };
+
+  const insertImageMarkdown = (url: string, defaultAlt: string) => {
+    const textarea = document.getElementById("manuscriptTextarea") as HTMLTextAreaElement;
+    const caption = prompt("Enter figure caption / alt text:", defaultAlt) || defaultAlt;
+    const imageMarkdown = `\n\n![${caption}](${url})\n*Figure: ${caption}*\n\n`;
+
+    if (!textarea) {
+      setContent((prev) => prev + imageMarkdown);
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const nextContent = content.substring(0, start) + imageMarkdown + content.substring(end);
+    setContent(nextContent);
+  };
 
   const handleSave = (newStatus?: Blog["status"]) => {
     if (!title.trim()) {
@@ -43,7 +132,7 @@ function EditorContent() {
     saveBlog({
       id: editId || undefined,
       title: title.trim(),
-      category,
+      category: category.trim() || "General",
       tags: tagArray.length > 0 ? tagArray : ["engineering"],
       readTime: readTime.trim() || "5 min read",
       thumbnail: thumbnail.trim(),
@@ -75,15 +164,6 @@ function EditorContent() {
     const nextContent = content.substring(0, start) + replacement + content.substring(end);
     setContent(nextContent);
   };
-
-  const categories = [
-    "Kernel & OS",
-    "Systems & Compilers",
-    "Distributed Systems",
-    "Applied Cryptography",
-    "Web Infrastructure",
-    "Emerging Tech",
-  ];
 
   return (
     <div className="space-y-6">
@@ -158,17 +238,14 @@ function EditorContent() {
             <label className="block font-bold uppercase mb-1 text-[var(--text-muted)]">
               RESEARCH BEAT / CATEGORY:
             </label>
-            <select
+            <input
+              type="text"
+              required
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none cursor-pointer"
-            >
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c.toUpperCase()}
-                </option>
-              ))}
-            </select>
+              placeholder="e.g. Distributed Systems, Linux Kernel..."
+              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none"
+            />
           </div>
 
           <div>
@@ -198,19 +275,65 @@ function EditorContent() {
           </div>
         </div>
 
-        {/* Row 3: Thumbnail & Excerpt */}
+        {/* Row 3: Thumbnail & Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
           <div>
             <label className="block font-bold uppercase mb-1 text-[var(--text-muted)]">
-              FIGURE / THUMBNAIL IMAGE URL:
+              FIGURE / THUMBNAIL IMAGE (FILE UPLOAD):
             </label>
             <input
-              type="url"
-              value={thumbnail}
-              onChange={(e) => setThumbnail(e.target.value)}
-              placeholder="https://..."
-              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold text-[var(--text-main)] focus:outline-none"
+              type="file"
+              ref={thumbnailInputRef}
+              accept="image/*"
+              onChange={handleThumbnailUpload}
+              className="hidden"
             />
+            {thumbnail ? (
+              <div className="flex items-center gap-3 p-2 border-2 border-[var(--border-black)] bg-[var(--bg-card)] h-12">
+                <img
+                  src={thumbnail}
+                  alt="Thumbnail Preview"
+                  className="w-12 h-8 object-cover border border-[var(--border-black)] flex-shrink-0"
+                />
+                <span className="truncate flex-1 font-mono text-[11px] text-[var(--text-main)] font-bold uppercase">
+                  Image attached
+                </span>
+                <button
+                  type="button"
+                  onClick={() => thumbnailInputRef.current?.click()}
+                  disabled={isUploadingThumbnail}
+                  className="px-2 py-0.5 border border-[var(--border-black)] bg-[var(--bg-muted)] text-[10px] font-bold uppercase hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] transition-colors cursor-pointer"
+                >
+                  [ CHANGE ]
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setThumbnail("")}
+                  className="px-2 py-0.5 border border-red-500 text-red-600 dark:text-red-400 bg-[var(--bg-muted)] text-[10px] font-bold uppercase hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
+                >
+                  [ REMOVE ]
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                disabled={isUploadingThumbnail}
+                onClick={() => thumbnailInputRef.current?.click()}
+                className="w-full h-12 px-3 border-2 border-dashed border-[var(--border-black)] bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] font-mono text-xs font-bold uppercase flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              >
+                {isUploadingThumbnail ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>UPLOADING THUMBNAIL...</span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="w-4 h-4" />
+                    <span>[ ⇪ UPLOAD THUMBNAIL FILE ]</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           <div>
@@ -220,7 +343,7 @@ function EditorContent() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as Blog["status"])}
-              className="w-full h-10 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none cursor-pointer"
+              className="w-full h-12 px-3 border-2 border-[var(--border-black)] bg-[var(--bg-card)] font-bold uppercase text-[var(--text-main)] focus:outline-none cursor-pointer"
             >
               <option value="DRAFT">DRAFT</option>
               <option value="UNDER_REVIEW">UNDER REVIEW</option>
@@ -284,6 +407,29 @@ function EditorContent() {
             className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] cursor-pointer"
           >
             PULL QUOTE
+          </button>
+
+          {/* Body Figure Image File Upload Trigger */}
+          <input
+            type="file"
+            ref={bodyImageInputRef}
+            accept="image/*"
+            onChange={handleBodyImageUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            disabled={isUploadingBodyImage}
+            onClick={() => bodyImageInputRef.current?.click()}
+            className="px-2 py-1 border border-[var(--border-black)] bg-[var(--bg-card)] font-black hover:bg-[var(--text-main)] hover:text-[var(--bg-canvas)] transition-colors cursor-pointer inline-flex items-center gap-1"
+            title="Upload and insert an image file into the manuscript body"
+          >
+            {isUploadingBodyImage ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <ImageIcon className="w-3 h-3" />
+            )}
+            <span>{isUploadingBodyImage ? "UPLOADING..." : "[ ⇪ INSERT FIGURE IMAGE ]"}</span>
           </button>
         </div>
 

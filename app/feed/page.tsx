@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { getAllBlogs, getCategories } from "@/lib/blog-service";
+import {
+  getAllBlogs,
+  getCategories,
+  fetchPublicBlogs,
+  fetchBackendCategories,
+} from "@/lib/blog-service";
 import { Blog } from "@/lib/types";
 import StoryCard from "@/components/StoryCard";
 import ReaderModal from "@/components/ReaderModal";
@@ -12,16 +17,52 @@ function FeedContent() {
   const initialCategory = searchParams.get("category") || "ALL";
   const initialQuery = searchParams.get("q") || "";
 
-  const [blogs] = useState<Blog[]>(getAllBlogs);
+  const [blogs, setBlogs] = useState<Blog[]>(getAllBlogs);
+  const [backendCategories, setBackendCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const [sortOrder, setSortOrder] = useState<"recent" | "oldest" | "title">("recent");
   const [viewMode, setViewMode] = useState<"grid" | "row">("grid");
   const [previewBlog, setPreviewBlog] = useState<Blog | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Fetch from backend
+  useEffect(() => {
+    let active = true;
+    const loadData = async () => {
+      try {
+        const [publicBlogs, cats] = await Promise.all([
+          fetchPublicBlogs({
+            category: selectedCategory !== "ALL" ? selectedCategory : undefined,
+            search: searchQuery.trim() || undefined,
+          }),
+          fetchBackendCategories(),
+        ]);
+        if (!active) return;
+        if (Array.isArray(publicBlogs)) {
+          setBlogs(publicBlogs);
+        }
+        if (cats && cats.length > 0) {
+          setBackendCategories(cats);
+        }
+      } catch (err) {
+        console.warn("Could not load feed data:", err);
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    };
+
+    loadData();
+    return () => {
+      active = false;
+    };
+  }, [selectedCategory, searchQuery]);
 
   const categories = useMemo(() => {
-    return ["ALL", ...getCategories(blogs)];
-  }, [blogs]);
+    const list = backendCategories.length > 0 ? backendCategories : getCategories(blogs);
+    const unique = Array.from(new Set(list));
+    return ["ALL", ...unique];
+  }, [backendCategories, blogs]);
 
   const filteredBlogs = useMemo(() => {
     let result = blogs.filter((b) => b.status === "PUBLISHED" || b.status === "ARCHIVED");
@@ -72,26 +113,7 @@ function FeedContent() {
 
       {/* Filter and Search Controls Deck */}
       <section className="space-y-4">
-        {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-mono text-xs font-bold uppercase">
-          {categories.map((cat) => {
-            const isSelected =
-              selectedCategory.toLowerCase() === cat.toLowerCase();
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 border-2 border-[var(--border-black)] transition-colors whitespace-nowrap cursor-pointer ${
-                  isSelected
-                    ? "bg-[var(--text-main)] text-[var(--bg-canvas)]"
-                    : "bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-subtle)]"
-                }`}
-              >
-                {cat === "ALL" ? "✦ ALL BEATS" : cat}
-              </button>
-            );
-          })}
-        </div>
+        {/* Categories Bar is unmounted per requirements */}
 
         {/* Search, Sort, View Toggle Bar */}
         <div className="border-2 border-[var(--border-black)] bg-[var(--bg-card)] p-3 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs">
@@ -103,14 +125,18 @@ function FeedContent() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setIsLoading(true);
+                setSearchQuery(e.target.value);
+              }}
               placeholder="FILTER TITLES, TOPICS, TAGS..."
-              className="w-full h-9 pl-7 pr-3 bg-[var(--bg-card)] border border-[var(--border-black)] font-mono text-xs font-bold uppercase text-[var(--text-main)] focus:outline-none"
+              className="w-full h-9 pl-7 pr-7 bg-[var(--bg-card)] border border-[var(--border-black)] font-mono text-xs font-bold uppercase text-[var(--text-main)] focus:outline-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-2 text-xs font-bold hover:text-[var(--text-main)]"
+                className="absolute right-2.5 top-2 text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] cursor-pointer"
+                title="Clear search"
               >
                 ✕
               </button>
@@ -136,10 +162,10 @@ function FeedContent() {
             <div className="flex items-center border border-[var(--border-black)]">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`px-3 h-8 font-mono text-xs font-black uppercase ${
+                className={`px-3 h-8 font-mono text-xs font-black uppercase cursor-pointer transition-colors ${
                   viewMode === "grid"
                     ? "bg-[var(--text-main)] text-[var(--bg-canvas)]"
-                    : "bg-[var(--bg-card)] text-[var(--text-main)]"
+                    : "bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-subtle)]"
                 }`}
                 title="Grid Card View"
               >
@@ -147,10 +173,10 @@ function FeedContent() {
               </button>
               <button
                 onClick={() => setViewMode("row")}
-                className={`px-3 h-8 font-mono text-xs font-black uppercase ${
+                className={`px-3 h-8 font-mono text-xs font-black uppercase cursor-pointer transition-colors ${
                   viewMode === "row"
                     ? "bg-[var(--text-main)] text-[var(--bg-canvas)]"
-                    : "bg-[var(--bg-card)] text-[var(--text-main)]"
+                    : "bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-subtle)]"
                 }`}
                 title="Ledger List View"
               >
@@ -165,57 +191,57 @@ function FeedContent() {
       <div className="flex items-center justify-between font-mono text-xs font-bold uppercase text-[var(--text-muted)] border-b border-[var(--border-subtle)] pb-2">
         <span>
           SHOWING {filteredBlogs.length} OF {blogs.length} REGISTERED DISPATCHES
+          {isLoading && " (SYNCING WITH BACKEND...)"}
         </span>
         {selectedCategory !== "ALL" && (
           <button
             onClick={() => setSelectedCategory("ALL")}
-            className="hover:underline text-[var(--text-main)]"
+            className="hover:underline text-[var(--text-main)] cursor-pointer"
           >
             [ CLEAR CATEGORY FILTER ✕ ]
           </button>
         )}
       </div>
 
-      {/* Stories Grid / Rows */}
+      {/* Grid or Row Feed Output */}
       {filteredBlogs.length === 0 ? (
-        <div className="border-3 border-dashed border-[var(--border-black)] p-12 text-center bg-[var(--bg-muted)] space-y-3">
-          <span className="font-mono text-2xl font-black">∅</span>
-          <h3 className="font-heading text-2xl font-black uppercase text-[var(--text-main)]">
-            No Dispatches Found Matching Query
-          </h3>
-          <p className="font-serif text-sm text-[var(--text-muted)] max-w-md mx-auto">
-            Try adjusting your search query or selecting a different category from the top broadsheet
-            bar.
+        <div className="border-3 border-dashed border-[var(--border-black)] p-12 text-center bg-[var(--bg-muted)] space-y-3 font-mono">
+          <div className="text-base font-black uppercase text-[var(--text-main)]">
+            NO DISPATCHES MATCHED YOUR QUERY
+          </div>
+          <p className="font-serif text-xs text-[var(--text-muted)] max-w-md mx-auto">
+            Try adjusting your search query, or clear active beat filters to inspect the full
+            chronicle archive.
           </p>
           <button
             onClick={() => {
-              setSearchQuery("");
               setSelectedCategory("ALL");
+              setSearchQuery("");
             }}
-            className="btn-broadsheet mt-3"
+            className="btn-broadsheet mt-3 cursor-pointer"
           >
-            ➔ RESET ALL FILTERS
+            RESET ARCHIVE FILTERS ↺
           </button>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBlogs.map((blog) => (
-            <StoryCard key={blog.id} blog={blog} variant="grid" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredBlogs.map((b) => (
+            <StoryCard key={b.id} blog={b} variant="grid" />
           ))}
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredBlogs.map((blog) => (
-            <StoryCard key={blog.id} blog={blog} variant="row" />
+          {filteredBlogs.map((b) => (
+            <StoryCard key={b.id} blog={b} variant="row" />
           ))}
         </div>
       )}
 
-      {/* Modal Preview Hook */}
+      {/* Reader Modal (Instant Preview) */}
       <ReaderModal
-        isOpen={!!previewBlog}
-        onClose={() => setPreviewBlog(null)}
         blog={previewBlog}
+        isOpen={Boolean(previewBlog)}
+        onClose={() => setPreviewBlog(null)}
       />
     </div>
   );
@@ -225,8 +251,8 @@ export default function FeedPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-12 text-center font-mono text-sm uppercase">
-          LOADING ACES BROADSHEET FEED...
+        <div className="p-12 text-center font-mono text-xs font-bold uppercase text-[var(--text-muted)]">
+          LOADING FOLIO FEED...
         </div>
       }
     >

@@ -10,7 +10,7 @@ interface StoryCardProps {
 export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
   const statusKey = (blog.status || "DRAFT").toLowerCase();
   const statusLabel = blog.status.replace(/_/g, " ");
-  const blogLink = `/blog/${blog.id}`;
+  const blogLink = `/blog/${blog.slug || blog.id}`;
 
   if (variant === "compact") {
     return (
@@ -26,9 +26,11 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
         >
           {blog.title}
         </Link>
-        <p className="font-serif text-xs text-[var(--text-muted)] line-clamp-2">
-          {blog.excerpt}
-        </p>
+        {blog.excerpt && (
+          <p className="font-serif text-xs text-[var(--text-muted)] line-clamp-2">
+            {blog.excerpt}
+          </p>
+        )}
       </article>
     );
   }
@@ -37,18 +39,21 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
     return (
       <article className="border-4 border-[var(--border-black)] bg-[var(--bg-card)] flex flex-col lg:flex-row gap-0 overflow-hidden">
         {/* Left / Top Lead Image */}
-        <div className="lg:w-1/2 relative min-h-[280px] lg:min-h-[380px] border-b-3 lg:border-b-0 lg:border-r-3 border-[var(--border-black)] bg-[var(--bg-muted)] overflow-hidden">
-          <img
-            src={blog.thumbnail}
-            alt={blog.title}
-            className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-300"
-          />
-          <span className="absolute top-2 left-2 bg-[var(--bg-card)] text-[var(--text-main)] font-mono text-[10px] font-black px-2 py-1 border border-[var(--border-black)] uppercase">
-            LEAD TECHNICAL DISPATCH
-          </span>
-          <span className="absolute bottom-2 right-2 font-mono text-xs text-[var(--text-main)] bg-[var(--bg-card)] px-1.5 py-0.5 border border-[var(--border-black)]">
-            ⊕ ✛ REG: 133 LPI
-          </span>
+        <div className="lg:w-1/2 relative min-h-[280px] lg:min-h-[380px] border-b-3 lg:border-b-0 lg:border-r-3 border-[var(--border-black)] bg-[var(--bg-muted)] overflow-hidden flex items-center justify-center">
+          {blog.thumbnail ? (
+            <img
+              src={blog.thumbnail}
+              alt={blog.title}
+              className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-300"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = "none";
+              }}
+            />
+          ) : (
+            <span className="font-mono text-sm font-bold uppercase text-[var(--text-muted)]">
+              [{blog.category}]
+            </span>
+          )}
         </div>
 
         {/* Right Lead Narrative */}
@@ -66,14 +71,10 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
               </h2>
             </Link>
 
-            <p className="font-serif text-base text-[var(--text-body)] leading-relaxed pt-2 drop-cap">
-              {blog.excerpt}
-            </p>
-
-            {blog.reviewer && (
-              <div className="p-2 border border-dashed border-[var(--border-black)] bg-[var(--bg-muted)] font-mono text-[11px] font-bold uppercase text-[var(--text-main)]">
-                [✔] FACULTY ACCREDITED: {blog.reviewer}
-              </div>
+            {blog.excerpt && (
+              <p className="font-serif text-base text-[var(--text-body)] leading-relaxed pt-2">
+                {blog.excerpt}
+              </p>
             )}
           </div>
 
@@ -89,14 +90,8 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
                 </div>
               )}
               <div className="flex flex-col">
-                <Link
-                  href={`/profile/${blog.author}`}
-                  className="font-heading text-sm font-black uppercase hover:underline"
-                >
-                  {blog.authorName || "Aarav Sharma"}
-                </Link>
-                <span className="font-mono text-[10px] text-[var(--text-muted)] font-bold">
-                  {blog.authorHandle || "@aarav_writes"} · FELLOW
+                <span className="font-heading text-sm font-black uppercase">
+                  {blog.authorName || "ACES Contributor"}
                 </span>
               </div>
             </div>
@@ -117,15 +112,21 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
     return (
       <article className="border-3 border-[var(--border-black)] bg-[var(--bg-card)] p-4 sm:p-5 flex flex-col sm:flex-row items-stretch gap-4 sm:gap-6 hover:shadow-[4px_4px_0px_var(--border-black)] transition-all">
         {/* Thumbnail Box */}
-        <div className="w-full sm:w-44 h-32 flex-shrink-0 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden">
-          <img
-            src={blog.thumbnail}
-            alt={blog.title}
-            className="w-full h-full object-cover filter grayscale"
-          />
-          <span className="absolute top-1 right-1 font-mono text-[9px] bg-[var(--bg-card)] text-[var(--text-main)] px-1 border border-[var(--border-black)]">
-            ⊕
-          </span>
+        <div className="w-full sm:w-44 h-32 flex-shrink-0 border-2 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden flex items-center justify-center">
+          {blog.thumbnail ? (
+            <img
+              src={blog.thumbnail}
+              alt={blog.title}
+              className="w-full h-full object-cover filter grayscale"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = "none";
+              }}
+            />
+          ) : (
+            <span className="font-mono text-xs font-bold uppercase text-[var(--text-muted)]">
+              [{blog.category}]
+            </span>
+          )}
         </div>
 
         {/* Content Details */}
@@ -144,20 +145,19 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
               {blog.title}
             </Link>
 
-            <p className="font-serif text-sm text-[var(--text-muted)] line-clamp-2 mt-1">
-              {blog.excerpt}
-            </p>
+            {blog.excerpt && (
+              <p className="font-serif text-sm text-[var(--text-muted)] line-clamp-2 mt-1">
+                {blog.excerpt}
+              </p>
+            )}
           </div>
 
           <div className="pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between gap-4 font-mono text-xs uppercase font-bold text-[var(--text-muted)]">
             <div className="flex items-center gap-2">
               <span>BY</span>
-              <Link
-                href={`/profile/${blog.author}`}
-                className="text-[var(--text-main)] hover:underline font-black"
-              >
-                {blog.authorName || "AARAV SHARMA"}
-              </Link>
+              <span className="text-[var(--text-main)] font-black">
+                {blog.authorName || "ACES Contributor"}
+              </span>
             </div>
             <Link
               href={blogLink}
@@ -175,12 +175,21 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
   return (
     <article className="border-3 border-[var(--border-black)] bg-[var(--bg-card)] flex flex-col justify-between hover:shadow-[6px_6px_0px_var(--border-black)] transition-all">
       {/* Thumbnail */}
-      <div className="h-48 w-full border-b-3 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden">
-        <img
-          src={blog.thumbnail}
-          alt={blog.title}
-          className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-200"
-        />
+      <div className="h-48 w-full border-b-3 border-[var(--border-black)] bg-[var(--bg-muted)] relative overflow-hidden flex items-center justify-center">
+        {blog.thumbnail ? (
+          <img
+            src={blog.thumbnail}
+            alt={blog.title}
+            className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-200"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <span className="font-mono text-xs font-bold uppercase text-[var(--text-muted)]">
+            [{blog.category}]
+          </span>
+        )}
         <div className="absolute top-2 left-2 flex items-center gap-1">
           <span className={`snappy-status-pill ${statusKey}`}>{statusLabel}</span>
         </div>
@@ -194,9 +203,6 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
         <div>
           <div className="font-mono text-xs font-bold uppercase text-[var(--text-muted)] mb-1">
             <span>{blog.readTime}</span>
-            {blog.readsCount ? (
-              <span> • {(blog.readsCount / 1000).toFixed(1)}k reads</span>
-            ) : null}
           </div>
 
           <Link
@@ -206,19 +212,18 @@ export default function StoryCard({ blog, variant = "grid" }: StoryCardProps) {
             {blog.title}
           </Link>
 
-          <p className="font-serif text-xs leading-relaxed text-[var(--text-muted)] line-clamp-3 mt-2">
-            {blog.excerpt}
-          </p>
+          {blog.excerpt && (
+            <p className="font-serif text-xs leading-relaxed text-[var(--text-muted)] line-clamp-3 mt-2">
+              {blog.excerpt}
+            </p>
+          )}
         </div>
 
         {/* Footer info */}
         <div className="pt-3 border-t-2 border-[var(--border-black)] flex items-center justify-between gap-2 font-mono text-xs uppercase font-bold">
-          <Link
-            href={`/profile/${blog.author}`}
-            className="text-[var(--text-main)] hover:underline truncate"
-          >
-            ✎ {blog.authorName || "Aarav Sharma"}
-          </Link>
+          <span className="text-[var(--text-main)] truncate">
+            ✎ {blog.authorName || "ACES Contributor"}
+          </span>
           <Link
             href={blogLink}
             className="text-[var(--text-main)] font-black hover:underline whitespace-nowrap"

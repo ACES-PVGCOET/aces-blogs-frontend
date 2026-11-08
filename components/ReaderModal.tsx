@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Blog } from "@/lib/types";
+import TipTapRenderer from "@/components/editor/TipTapRenderer";
 
 interface ReaderModalProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ export default function ReaderModal({
         <div className="snappy-modal-head">
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-black uppercase text-[var(--text-muted)]">
-              BROADSHEET PROOF ·
+              MANUSCRIPT PROOF ·
             </span>
             <span className="snappy-modal-title line-clamp-1">
               {blog.title}
@@ -55,10 +56,10 @@ export default function ReaderModal({
                 src={blog.thumbnail}
                 alt={blog.title}
                 className="w-full h-full object-cover filter grayscale"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = "none";
+                }}
               />
-              <span className="absolute bottom-2 right-2 font-mono text-[10px] bg-[var(--bg-card)] text-[var(--text-main)] px-1.5 py-0.5 border border-[var(--border-black)]">
-                ⊕ PROOF MANUSCRIPT
-              </span>
             </div>
           )}
 
@@ -67,7 +68,7 @@ export default function ReaderModal({
               <span className="snappy-status-pill published">
                 {blog.status.replace(/_/g, " ")}
               </span>
-              <span>{blog.category}</span>
+              <span>[{blog.category}]</span>
               <span>• REV v{blog.latestRevisionVersion || 1}</span>
             </div>
 
@@ -76,32 +77,34 @@ export default function ReaderModal({
             </h2>
 
             <div className="font-mono text-xs text-[var(--text-muted)] flex items-center gap-4 mt-2 uppercase font-bold">
-              <span>AUTHOR: {blog.authorName || "AARAV SHARMA"}</span>
+              <span>AUTHOR: {blog.authorName || "ACES CONTRIBUTOR"}</span>
               <span>READ TIME: {blog.readTime}</span>
             </div>
           </div>
 
           <div className="font-serif text-sm leading-relaxed text-[var(--text-body)] space-y-3 pt-2">
-            <p className="font-bold italic text-base border-l-3 border-[var(--border-black)] pl-3">
-              {blog.excerpt}
-            </p>
-            <div className="whitespace-pre-line leading-relaxed">
-              {blog.content}
-            </div>
+            {blog.excerpt && (
+              <p className="font-bold italic text-base border-l-3 border-[var(--border-black)] pl-3">
+                {blog.excerpt}
+              </p>
+            )}
+            <TipTapRenderer
+              content={blog.contentJson || blog.content}
+              enableDropCap={true}
+            />
           </div>
         </div>
 
         {/* Foot */}
         <div className="snappy-modal-foot">
           <button type="button" onClick={onClose} className="btn-broadsheet">
-            [ ✕ CLOSE PROOF ]
+            [ ✕ DISMISS ]
           </button>
           <Link
-            href={`/blog/${blog.id}`}
-            onClick={onClose}
+            href={`/blog/${blog.slug || blog.id}`}
             className="btn-broadsheet btn-broadsheet-primary"
           >
-            OPEN FULL ARTICLE PAGE ➔
+            ➔ OPEN FULL DISPATCH PAGE
           </Link>
         </div>
       </div>

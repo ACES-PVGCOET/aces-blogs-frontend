@@ -65,7 +65,8 @@ export interface Blog {
   tags: string[];
   readTime: string;
   readsCount?: number;
-  content: string;
+  content: string; // Serialized JSON document string for database storage
+  contentJson?: Record<string, unknown> | null; // TipTap JSON document object
   excerpt: string;
   rejectionReason?: string | null;
   latestRevisionVersion: number;

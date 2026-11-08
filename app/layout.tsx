@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Anton, Merriweather, Courier_Prime } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 const anton = Anton({
@@ -56,13 +57,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-body)] antialiased flex flex-col selection:bg-[var(--text-main)] selection:text-[var(--bg-canvas)]">
-        <Suspense fallback={<div className="h-20 bg-[var(--bg-card)] border-b-4 border-[var(--border-black)]" />}>
-          <Navbar />
-        </Suspense>
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          {children}
-        </main>
-        <Footer />
+        <AuthProvider>
+          <Suspense fallback={<div className="h-20 bg-[var(--bg-card)] border-b-4 border-[var(--border-black)]" />}>
+            <Navbar />
+          </Suspense>
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
