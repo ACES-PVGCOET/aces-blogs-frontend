@@ -1,62 +1,64 @@
-import { User, Badge, Team } from "./types";
+import { User, Badge, Team, Blog, WriterProfile } from "./types";
 
 /**
- * Sample earned badges to test the filled state.
+ * Empty sample badges
  */
-export const mockSampleBadges: Badge[] = [
-  {
-    id: "badge-1",
-    name: "Primeira Vitória",
-    iconUrl: null,
-    earnedAt: "2020-04-12T10:00:00.000Z",
-  },
-  {
-    id: "badge-2",
-    name: "Explorador da Floresta",
-    iconUrl: null,
-    earnedAt: "2020-05-01T14:20:00.000Z",
-  },
-];
+export const mockSampleBadges: Badge[] = [];
 
 /**
- * Primary user profile mock.
- * Note: Uses neutral placeholder name "Ana Clara Mendes" as specified.
- * Easy to update or swap with Finn Campbell Mertens if needed.
+ * Base user profile
  */
 export const mockUser: User = {
   id: "user-1",
-  name: "Ana Clara Mendes",
-  email: "ana.mendes@escola.sp.gov.br",
-  school: "E.E. Cecília Meireles",
-  city: "São Paulo, SP",
-  age: 16,
-  hometown: "Campinas, SP",
-  companion: "Pipoca (Golden)",
-  lastAccess: "2020-05-08T18:45:00.000Z",
-  rankTitle: "Aventureiro",
-  avatarUrl: "/images/avatar-placeholder.png",
+  name: "ACES Contributor",
+  email: "contributor@aces.pvgcoet.ac.in",
+  school: "Department of Computer Engineering · PVGCOET",
+  city: "Pune, Maharashtra",
+  age: 21,
+  hometown: "Pune, MH",
+  companion: "contributor",
+  lastAccess: "2026-01-01T00:00:00.000Z",
+  rankTitle: "Author & Fellow",
+  avatarUrl: null,
   bannerUrl: "/images/banner-placeholder.jpg",
-  badges: [], // Default is empty to show the empty state
+  badges: [],
 };
 
-/**
- * Alternative mock user with badges filled for demonstration/testing.
- */
 export const mockUserWithBadges: User = {
   ...mockUser,
   id: "user-2",
-  badges: mockSampleBadges,
+  badges: [],
 };
 
 /**
- * Eight teams sorted by rank.
- * Ranks 1 to 3 appear on the podium.
- * Ranks 4 to 8 appear on the ordered ranking list.
+ * Default Writer Profile
+ */
+export const mockWriterProfile: WriterProfile = {
+  id: "writer-101",
+  name: "ACES Contributor",
+  username: "contributor",
+  role: "WRITER",
+  status: "ACTIVE",
+  profileImg: "",
+  linkedIn: "",
+  github: "",
+  bio: "",
+  labels: [],
+  createdAt: "2026-01-01T00:00:00.000Z",
+};
+
+/**
+ * Technical Dispatches / Blogs fallback array (empty by default; loaded dynamically from backend)
+ */
+export const mockBlogs: Blog[] = [];
+
+/**
+ * Campus teams rankings
  */
 export const mockTeams: Team[] = [
   {
     id: "team-1",
-    name: "Equipe Um",
+    name: "Phoenix Systems Lab",
     points: 7210,
     streakDays: 5,
     emblemVariant: "default",
@@ -64,39 +66,39 @@ export const mockTeams: Team[] = [
   },
   {
     id: "team-2",
-    name: "Equipe Dois",
+    name: "Turing Compilers Group",
     points: 6970,
-    streakDays: 2,
+    streakDays: 4,
     emblemVariant: "default",
     rank: 2,
   },
   {
     id: "team-3",
-    name: "Equipe Três",
+    name: "Consensus & Protocols Cell",
     points: 6520,
-    streakDays: 1,
-    emblemVariant: "decorated",
+    streakDays: 3,
+    emblemVariant: "default",
     rank: 3,
   },
   {
     id: "team-4",
-    name: "Equipe Quatro",
+    name: "Crypto & Zero-Knowledge Track",
     points: 5875,
-    streakDays: 0,
+    streakDays: 2,
     emblemVariant: "default",
     rank: 4,
   },
   {
     id: "team-5",
-    name: "Equipe Cinco",
+    name: "Distributed Telemetry Guild",
     points: 5800,
-    streakDays: 0,
+    streakDays: 1,
     emblemVariant: "default",
     rank: 5,
   },
   {
     id: "team-6",
-    name: "Equipe Seis",
+    name: "Linux Kernel Hacking Unit",
     points: 5535,
     streakDays: 0,
     emblemVariant: "default",
@@ -104,15 +106,15 @@ export const mockTeams: Team[] = [
   },
   {
     id: "team-7",
-    name: "Equipe Sete",
-    points: 5535,
+    name: "Microservices Architecture Pod",
+    points: 5410,
     streakDays: 0,
     emblemVariant: "default",
     rank: 7,
   },
   {
     id: "team-8",
-    name: "Equipe Oito",
+    name: "Wasm & Runtime Mechanics",
     points: 5180,
     streakDays: 0,
     emblemVariant: "default",
